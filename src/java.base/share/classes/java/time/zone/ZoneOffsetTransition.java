@@ -421,10 +421,10 @@ public final class ZoneOffsetTransition
         if (other == this) {
             return true;
         }
-        return (other instanceof ZoneOffsetTransition d)
-                && epochSecond == d.epochSecond
-                && offsetBefore.equals(d.offsetBefore)
-                && offsetAfter.equals(d.offsetAfter);
+        return (other instanceof ZoneOffsetTransition)
+                && epochSecond == ((ZoneOffsetTransition)other).epochSecond
+                && offsetBefore.equals(((ZoneOffsetTransition)other).offsetBefore)
+                && offsetAfter.equals(((ZoneOffsetTransition)other).offsetAfter);
     }
 
     /**

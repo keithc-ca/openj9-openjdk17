@@ -114,7 +114,7 @@ public class JSpec implements Taglet  {
         return EnumSet.allOf(jdk.javadoc.doclet.Taglet.Location.class);
     }
 
-    @Override
+    // @Override
     public boolean isBlockTag() {
         return true;
     }

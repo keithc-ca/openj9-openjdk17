@@ -519,8 +519,11 @@ public final class ZoneOffsetTransitionRule implements Serializable {
         if (otherRule == this) {
             return true;
         }
-        return (otherRule instanceof ZoneOffsetTransitionRule other)
-                && month == other.month
+        if (!(otherRule instanceof ZoneOffsetTransitionRule)) {
+            return false;
+        }
+        ZoneOffsetTransitionRule other = (ZoneOffsetTransitionRule)otherRule;
+        return     month == other.month
                 && dom == other.dom
                 && dow == other.dow
                 && timeDefinition == other.timeDefinition

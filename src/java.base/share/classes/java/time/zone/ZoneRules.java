@@ -1039,8 +1039,11 @@ public final class ZoneRules implements Serializable {
         if (this == otherRules) {
            return true;
         }
-        return (otherRules instanceof ZoneRules other)
-                && Arrays.equals(standardTransitions, other.standardTransitions)
+        if (!(otherRules instanceof ZoneRules)) {
+            return false;
+        }
+        ZoneRules other = (ZoneRules)otherRules;
+        return     Arrays.equals(standardTransitions, other.standardTransitions)
                 && Arrays.equals(standardOffsets, other.standardOffsets)
                 && Arrays.equals(savingsInstantTransitions, other.savingsInstantTransitions)
                 && Arrays.equals(wallOffsets, other.wallOffsets)

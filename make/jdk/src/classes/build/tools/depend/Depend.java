@@ -59,7 +59,7 @@ import javax.lang.model.element.ModuleElement.RequiresDirective;
 import javax.lang.model.element.ModuleElement.UsesDirective;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.QualifiedNameable;
-import javax.lang.model.element.RecordComponentElement;
+// import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -259,12 +259,12 @@ public class Depend implements Plugin {
             return null;
         }
 
-        @Override
-        public Void visitRecordComponent(@SuppressWarnings("preview")RecordComponentElement e, Void p) {
-            update(e.getSimpleName());
-            visit(e.asType());
-            return null;
-        }
+//      @Override
+//      public Void visitRecordComponent(@SuppressWarnings("preview")RecordComponentElement e, Void p) {
+//          update(e.getSimpleName());
+//          visit(e.asType());
+//          return null;
+//      }
 
         @Override
         public Void visitVariable(VariableElement e, Void p) {
@@ -294,9 +294,34 @@ public class Depend implements Plugin {
             return null;
         }
 
+        private static boolean implementsInterface(Class<?> cls, String interfaceName) {
+            if (cls == null) {
+                return false;
+            }
+            if (cls.isInterface()) {
+                if (cls.getName().equals(interfaceName)) {
+                    return true;
+                }
+            }
+            for (Class<?> iface : cls.getInterfaces()) {
+                if (implementsInterface(iface, interfaceName)) {
+                    return true;
+                }
+            }
+            return implementsInterface(cls.getSuperclass(), interfaceName);
+        }
+
         @Override
         public Void visitUnknown(Element e, Void p) {
-            throw new UnsupportedOperationException("Not supported.");
+            if (implementsInterface(e.getClass(), "javax.lang.model.element.RecordComponentElement")) {
+                // Behave as if this class implements
+                //   Void visitRecordComponent(RecordComponentElement, Void)
+                // (commented out above)
+                update(e.getSimpleName());
+                visit(e.asType());
+                return null;
+            }
+            throw new UnsupportedOperationException("Not supported." + e.getClass().getName());
         }
 
         @Override
