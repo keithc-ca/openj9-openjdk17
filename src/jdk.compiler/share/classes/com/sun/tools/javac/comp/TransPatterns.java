@@ -504,12 +504,14 @@ public class TransPatterns extends TreeTranslator {
             } else {
                 Assert.checkNonNull(l.type.constValue());
 
-                return switch (l.type.getTag()) {
-                    case BYTE, CHAR,
-                         SHORT, INT -> LoadableConstant.Int((Integer) l.type.constValue());
-                    case CLASS -> LoadableConstant.String((String) l.type.constValue());
-                    default -> throw new AssertionError();
-                };
+                switch (l.type.getTag()) {
+                    case BYTE:
+                    case CHAR:
+                    case SHORT:
+                    case INT: return LoadableConstant.Int((Integer) l.type.constValue());
+                    case CLASS: return LoadableConstant.String((String) l.type.constValue());
+                    default: throw new AssertionError();
+                }
             }
         } else {
             return null;

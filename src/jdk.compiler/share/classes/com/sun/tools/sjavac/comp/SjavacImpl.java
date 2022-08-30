@@ -122,9 +122,9 @@ public class SjavacImpl implements Sjavac {
 
             // Clean up
             JavaFileManager fileManager = context.get(JavaFileManager.class);
-            if (fileManager instanceof JavacFileManager javacFileManager) {
+            if (fileManager instanceof JavacFileManager) {
                 try {
-                    javacFileManager.close();
+                    ((JavacFileManager)fileManager).close();
                 } catch (IOException es) {
                     throw new UncheckedIOException(es);
                 }

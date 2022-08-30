@@ -1347,9 +1347,9 @@ public class TreeInfo {
     }
 
     public static PatternPrimaryType primaryPatternType(JCPattern pat) {
-        return switch (pat.getTag()) {
-            case BINDINGPATTERN -> new PatternPrimaryType(((JCBindingPattern) pat).type, true);
-            case GUARDPATTERN -> {
+        switch (pat.getTag()) {
+            case BINDINGPATTERN: return new PatternPrimaryType(((JCBindingPattern) pat).type, true);
+            case GUARDPATTERN: {
                 JCGuardPattern guarded = (JCGuardPattern) pat;
                 PatternPrimaryType nested = primaryPatternType(guarded.patt);
                 boolean unconditional = nested.unconditional();
@@ -1360,22 +1360,44 @@ public class TreeInfo {
                         unconditional = true;
                     }
                 }
-                yield new PatternPrimaryType(nested.type(), unconditional);
+                return new PatternPrimaryType(nested.type(), unconditional);
             }
-            case PARENTHESIZEDPATTERN -> primaryPatternType(((JCParenthesizedPattern) pat).pattern);
-            default -> throw new AssertionError();
-        };
+            case PARENTHESIZEDPATTERN: return primaryPatternType(((JCParenthesizedPattern) pat).pattern);
+            default: throw new AssertionError();
+        }
     }
 
     public static JCBindingPattern primaryPatternTree(JCPattern pat) {
-        return switch (pat.getTag()) {
-            case BINDINGPATTERN -> (JCBindingPattern) pat;
-            case GUARDPATTERN -> primaryPatternTree(((JCGuardPattern) pat).patt);
-            case PARENTHESIZEDPATTERN -> primaryPatternTree(((JCParenthesizedPattern) pat).pattern);
-            default -> throw new AssertionError();
-        };
+        switch (pat.getTag()) {
+            case BINDINGPATTERN: return (JCBindingPattern) pat;
+            case GUARDPATTERN: return primaryPatternTree(((JCGuardPattern) pat).patt);
+            case PARENTHESIZEDPATTERN: return primaryPatternTree(((JCParenthesizedPattern) pat).pattern);
+            default: throw new AssertionError();
+        }
     }
 
-    public record PatternPrimaryType(Type type, boolean unconditional) {}
+//  public record PatternPrimaryType(Type type, boolean unconditional) {}
+    public static final class PatternPrimaryType {
+        public final Type type;
+        public final boolean unconditional;
+        public PatternPrimaryType(Type type, boolean unconditional) {
+            this.type = type;
+            this.unconditional = unconditional;
+        }
+        public Type type() {
+            return type;
+        }
+        public boolean unconditional() {
+            return unconditional;
+        }
+        public boolean equals(Object o) {
+            return o instanceof PatternPrimaryType
+                && type == ((PatternPrimaryType)o).type
+                && unconditional == ((PatternPrimaryType)o).unconditional;
+        }
+        public int hashCode() {
+            return (java.util.Objects.hashCode(type) << 1) + (unconditional ? 1 : 0);
+        }
+    }
 
 }

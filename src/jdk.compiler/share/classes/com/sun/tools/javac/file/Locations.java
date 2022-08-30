@@ -953,7 +953,7 @@ public class Locations {
             Path modules = javaHome.resolve("modules");
             if (Files.isDirectory(modules.resolve("java.base"))) {
                 try (Stream<Path> listedModules = Files.list(modules)) {
-                    return listedModules.toList();
+                    return listedModules.collect(Collectors.toList());
                 }
             }
 
@@ -1232,7 +1232,8 @@ public class Locations {
 
             for (Set<Location> set : listLocationsForModules()) {
                 for (Location locn : set) {
-                    if (locn instanceof ModuleLocationHandler moduleLocationHandler) {
+                    if (locn instanceof ModuleLocationHandler) {
+                        ModuleLocationHandler moduleLocationHandler = (ModuleLocationHandler)locn;
                         if (!moduleTable.nameMap.containsKey(moduleLocationHandler.moduleName)) {
                             moduleTable.add(moduleLocationHandler);
                         }
@@ -2199,8 +2200,8 @@ public class Locations {
 
     protected LocationHandler getHandler(Location location) {
         Objects.requireNonNull(location);
-        return (location instanceof LocationHandler locationHandler)
-                ? locationHandler
+        return (location instanceof LocationHandler)
+                ? (LocationHandler)location
                 : handlersForLocation.get(location);
     }
 

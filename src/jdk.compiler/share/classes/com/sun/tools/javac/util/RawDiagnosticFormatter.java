@@ -155,13 +155,13 @@ public final class RawDiagnosticFormatter extends AbstractDiagnosticFormatter {
         String s;
         if (arg instanceof Formattable) {
             s = arg.toString();
-        } else if (arg instanceof JCExpression expression) {
+        } else if (arg instanceof JCExpression) {
             Assert.checkNonNull(rawDiagnosticPosHelper);
-            s = "@" + rawDiagnosticPosHelper.getPosition(expression);
-        } else if (arg instanceof PathFileObject pathFileObject) {
-            s = pathFileObject.getShortName();
-        } else if (arg instanceof Tag tag) {
-            s = "compiler.misc.tree.tag." + StringUtils.toLowerCase(tag.name());
+            s = "@" + rawDiagnosticPosHelper.getPosition((JCExpression)arg);
+        } else if (arg instanceof PathFileObject) {
+            s = ((PathFileObject)arg).getShortName();
+        } else if (arg instanceof Tag) {
+            s = "compiler.misc.tree.tag." + StringUtils.toLowerCase(((Tag)arg).name());
         } else if (arg instanceof Source && arg == Source.DEFAULT &&
                 CODES_NEEDING_SOURCE_NORMALIZATION.contains(diag.getCode())) {
             s = "DEFAULT";

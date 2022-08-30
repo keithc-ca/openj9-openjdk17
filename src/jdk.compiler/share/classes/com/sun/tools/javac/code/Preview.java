@@ -184,15 +184,15 @@ public class Preview {
      * @return true, if given feature is a preview feature.
      */
     public boolean isPreview(Feature feature) {
-        return switch (feature) {
-            case CASE_NULL -> true;
-            case PATTERN_SWITCH -> true;
+        switch (feature) {
+            case CASE_NULL: return true;
+            case PATTERN_SWITCH: return true;
 
             //Note: this is a backdoor which allows to optionally treat all features as 'preview' (for testing).
             //When real preview features will be added, this method can be implemented to return 'true'
             //for those selected features, and 'false' for all the others.
-            default -> forcePreview;
-        };
+            default: return forcePreview;
+        }
     }
 
     /**

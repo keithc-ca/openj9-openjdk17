@@ -170,15 +170,18 @@ public class UnicodeReader {
         if (character == '\\' && (!wasBackslash || wasUnicodeEscape)) {
             // Is a backslash and may be an unicode escape.
             switch (unicodeEscape()) {
-                case BACKSLASH -> {
+                case BACKSLASH: {
                     wasUnicodeEscape = false;
                     wasBackslash = !wasBackslash;
+                    break;
                 }
-                case VALID_ESCAPE -> {
+                case VALID_ESCAPE: {
                     wasUnicodeEscape = true;
                     wasBackslash = character == '\\' && !wasBackslash;
+                    break;
                 }
-                case BROKEN_ESCAPE -> nextUnicodeInputCharacter(); //skip broken unicode escapes
+                case BROKEN_ESCAPE: nextUnicodeInputCharacter(); //skip broken unicode escapes
+                    break;
             }
         } else {
             wasBackslash = false;

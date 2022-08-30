@@ -232,7 +232,7 @@ public class JavacTaskImpl extends BasicJavacTask {
     void cleanup() {
         if (compiler != null)
             compiler.close();
-        if (fileManager instanceof BaseFileManager baseFileManager && baseFileManager.autoClose) {
+        if (fileManager instanceof BaseFileManager && ((BaseFileManager)fileManager).autoClose) {
             try {
                 fileManager.close();
             } catch (IOException ignore) {
@@ -321,10 +321,10 @@ public class JavacTaskImpl extends BasicJavacTask {
         }
         else {
             for (CompilationUnitTree cu : trees) {
-                if (cu instanceof JCCompilationUnit compilationUnit) {
+                if (cu instanceof JCCompilationUnit) {
                     if (roots == null)
                         roots = new ListBuffer<>();
-                    roots.append(compilationUnit);
+                    roots.append((JCCompilationUnit)cu);
                     notYetEntered.remove(cu.getSourceFile());
                 }
                 else

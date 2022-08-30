@@ -1420,7 +1420,8 @@ public abstract class Symbol extends AnnoConstruct implements PoolConstant, Elem
         @DefinedBy(Api.LANGUAGE_MODEL)
         public List<Type> getInterfaces() {
             apiComplete();
-            if (type instanceof ClassType classType) {
+            if (type instanceof ClassType) {
+                ClassType classType = (ClassType)type;
                 if (classType.interfaces_field == null) // FIXME: shouldn't be null
                     classType.interfaces_field = List.nil();
                 if (classType.all_interfaces_field != null)
@@ -1434,7 +1435,8 @@ public abstract class Symbol extends AnnoConstruct implements PoolConstant, Elem
         @DefinedBy(Api.LANGUAGE_MODEL)
         public Type getSuperclass() {
             apiComplete();
-            if (type instanceof ClassType classType) {
+            if (type instanceof ClassType) {
+                ClassType classType = (ClassType)type;
                 if (classType.supertype_field == null) // FIXME: shouldn't be null
                     classType.supertype_field = Type.noType;
                 // An interface has no superclass; its supertype is Object.
@@ -1595,7 +1597,8 @@ public abstract class Symbol extends AnnoConstruct implements PoolConstant, Elem
             erasure_field = null;
             members_field = null;
             flags_field = 0;
-            if (type instanceof ClassType classType) {
+            if (type instanceof ClassType) {
+                ClassType classType = (ClassType)type;
                 classType.setEnclosingType(Type.noType);
                 classType.rank_field = -1;
                 classType.typarams_field = null;
@@ -1762,7 +1765,8 @@ public abstract class Symbol extends AnnoConstruct implements PoolConstant, Elem
             if (data == ElementKind.EXCEPTION_PARAMETER ||
                 data == ElementKind.RESOURCE_VARIABLE) {
                 return null;
-            } else if (data instanceof Callable<?> callableData) {
+            } else if (data instanceof Callable<?>) {
+                Callable<?> callableData = (Callable<?>)data;
                 // In this case, this is a final variable, with an as
                 // yet unevaluated initializer.
                 data = null; // to make sure we don't evaluate this twice.

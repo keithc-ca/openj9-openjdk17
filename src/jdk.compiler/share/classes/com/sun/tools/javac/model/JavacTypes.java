@@ -123,7 +123,7 @@ public class JavacTypes implements javax.lang.model.util.Types {
         Type ty = (Type)t;
         return types.directSupertypes(ty).stream()
                 .map(Type::stripMetadataIfNeeded)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @DefinedBy(Api.LANGUAGE_MODEL)
@@ -329,9 +329,10 @@ public class JavacTypes implements javax.lang.model.util.Types {
                 || elem.getModifiers().contains(Modifier.PRIVATE))
             return Collections.emptySet();
 
-        if (!(elem instanceof MethodSymbol methodSymbol))
+        if (!(elem instanceof MethodSymbol))
             throw new IllegalArgumentException();
 
+        MethodSymbol methodSymbol = (MethodSymbol)elem;
         ClassSymbol origin = (ClassSymbol) methodSymbol.owner;
 
         Set<MethodSymbol> results = new LinkedHashSet<>();

@@ -203,9 +203,9 @@ public class SharedNameTable extends Name.Table {
          */
         @DefinedBy(Api.LANGUAGE_MODEL)
         public boolean equals(Object other) {
-            return (other instanceof Name name)
-                    && table == name.table
-                    && index == name.getIndex();
+            return (other instanceof Name)
+                    && table == ((Name)other).table
+                    && index == ((Name)other).getIndex();
         }
 
     }

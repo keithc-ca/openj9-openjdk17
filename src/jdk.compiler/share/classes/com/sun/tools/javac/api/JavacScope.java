@@ -127,9 +127,9 @@ public class JavacScope implements com.sun.source.tree.Scope {
     }
 
     public boolean equals(Object other) {
-        return other instanceof JavacScope javacScope
-                && env.equals(javacScope.env)
-                && isStarImportScope() == javacScope.isStarImportScope();
+        return other instanceof JavacScope
+                && env.equals(((JavacScope)other).env)
+                && isStarImportScope() == ((JavacScope)other).isStarImportScope();
     }
 
     public int hashCode() {

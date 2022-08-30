@@ -1592,7 +1592,8 @@ public class Resolve {
                 case ABSENT_MTH:
                     return new InapplicableSymbolError(currentResolutionContext);
                 case HIDDEN:
-                    if (bestSoFar instanceof AccessError accessError) {
+                    if (bestSoFar instanceof AccessError) {
+                        AccessError accessError = (AccessError)bestSoFar;
                         // Add the JCDiagnostic of previous AccessError to the currentResolutionContext
                         // and construct InapplicableSymbolsError.
                         // Intentionally fallthrough.
@@ -1624,7 +1625,8 @@ public class Resolve {
             } else if (bestSoFar.kind == WRONG_MTHS) {
                 // Add the JCDiagnostic of current AccessError to the currentResolutionContext
                 currentResolutionContext.addInapplicableCandidate(sym, curDiagnostic);
-            } else if (bestSoFar.kind == HIDDEN && bestSoFar instanceof AccessError accessError) {
+            } else if (bestSoFar.kind == HIDDEN && bestSoFar instanceof AccessError) {
+                AccessError accessError = (AccessError)bestSoFar;
                 // Add the JCDiagnostics of previous and current AccessError to the currentResolutionContext
                 // and construct InapplicableSymbolsError.
                 currentResolutionContext.addInapplicableCandidate(accessError.sym,
@@ -4821,10 +4823,10 @@ public class Resolve {
             }
 
             BiPredicate<Object, List<Type>> containsPredicate = (o, ts) -> {
-                if (o instanceof Type type) {
-                    return type.containsAny(ts);
-                } else if (o instanceof JCDiagnostic diagnostic) {
-                    return containsAny(diagnostic, ts);
+                if (o instanceof Type) {
+                    return ((Type)o).containsAny(ts);
+                } else if (o instanceof JCDiagnostic) {
+                    return containsAny((JCDiagnostic)o, ts);
                 } else {
                     return false;
                 }

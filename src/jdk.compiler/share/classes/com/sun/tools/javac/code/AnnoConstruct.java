@@ -168,8 +168,8 @@ public abstract class AnnoConstruct implements AnnotatedConstruct {
         ListBuffer<Attribute.Compound> compounds = new ListBuffer<>();
         if (contained0 != null) {
             for (Attribute a : contained0)
-                if (a instanceof Attribute.Compound attributeCompound)
-                    compounds = compounds.append(attributeCompound);
+                if (a instanceof Attribute.Compound)
+                    compounds = compounds.append((Attribute.Compound)a);
         }
         return compounds.toArray(new Attribute.Compound[compounds.size()]);
     }

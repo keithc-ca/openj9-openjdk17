@@ -319,12 +319,12 @@ public class Check {
     Type typeTagError(DiagnosticPosition pos, JCDiagnostic required, Object found) {
         // this error used to be raised by the parser,
         // but has been delayed to this point:
-        if (found instanceof Type type && type.hasTag(VOID)) {
+        if (found instanceof Type && ((Type)found).hasTag(VOID)) {
             log.error(pos, Errors.IllegalStartOfType);
             return syms.errType;
         }
         log.error(pos, Errors.TypeFoundReq(found, required));
-        return types.createErrorType(found instanceof Type type ? type : syms.errType);
+        return types.createErrorType(found instanceof Type ? ((Type)found) : syms.errType);
     }
 
     /** Report an error that symbol cannot be referenced before super
@@ -1358,7 +1358,7 @@ public class Check {
             @Override
             public void visitVarDef(JCVariableDecl tree) {
                 if ((tree.mods.flags & ENUM) != 0) {
-                    if (tree.init instanceof JCNewClass newClass && newClass.def != null) {
+                    if (tree.init instanceof JCNewClass && ((JCNewClass)tree.init).def != null) {
                         specialized = true;
                     }
                 }
@@ -3188,10 +3188,10 @@ public class Check {
         } else {
             containerTargets = new HashSet<>();
             for (Attribute app : containerTarget.values) {
-                if (!(app instanceof Attribute.Enum attributeEnum)) {
+                if (!(app instanceof Attribute.Enum)) {
                     continue; // recovery
                 }
-                containerTargets.add(attributeEnum.value.name);
+                containerTargets.add(((Attribute.Enum)app).value.name);
             }
         }
 
@@ -3202,10 +3202,10 @@ public class Check {
         } else {
             containedTargets = new HashSet<>();
             for (Attribute app : containedTarget.values) {
-                if (!(app instanceof Attribute.Enum attributeEnum)) {
+                if (!(app instanceof Attribute.Enum)) {
                     continue; // recovery
                 }
-                containedTargets.add(attributeEnum.value.name);
+                containedTargets.add(((Attribute.Enum)app).value.name);
             }
         }
 
@@ -3316,10 +3316,10 @@ public class Check {
             targets = new Name[arr.values.length];
             for (int i=0; i<arr.values.length; ++i) {
                 Attribute app = arr.values[i];
-                if (!(app instanceof Attribute.Enum attributeEnum)) {
+                if (!(app instanceof Attribute.Enum)) {
                     return new Name[0];
                 }
-                targets[i] = attributeEnum.value.name;
+                targets[i] = ((Attribute.Enum)app).value.name;
             }
         }
         return targets;
@@ -3346,11 +3346,11 @@ public class Check {
             targets = new Name[arr.values.length];
             for (int i=0; i<arr.values.length; ++i) {
                 Attribute app = arr.values[i];
-                if (!(app instanceof Attribute.Enum attributeEnum)) {
+                if (!(app instanceof Attribute.Enum)) {
                     // recovery
                     return Optional.empty();
                 }
-                targets[i] = attributeEnum.value.name;
+                targets[i] = ((Attribute.Enum)app).value.name;
             }
         }
         for (Name target : targets) {
@@ -3414,7 +3414,7 @@ public class Check {
         Attribute.Compound atTarget = s.getAnnotationTypeMetadata().getTarget();
         if (atTarget == null) return null; // ok, is applicable
         Attribute atValue = atTarget.member(names.value);
-        return (atValue instanceof Attribute.Array attributeArray) ? attributeArray : null;
+        return (atValue instanceof Attribute.Array) ? (Attribute.Array)atValue : null;
     }
 
     private Name[] dfltTargetMeta;
@@ -3887,10 +3887,10 @@ public class Check {
             Feature.MODULES.allowedInSource(source)) {
             NestingKind nestingKind = c.getNestingKind();
             switch (nestingKind) {
-                case ANONYMOUS,
-                     LOCAL -> {return;}
-                case TOP_LEVEL -> {;} // No additional checks needed
-                case MEMBER -> {
+                case ANONYMOUS:
+                case LOCAL: {return;}
+                case TOP_LEVEL: {break;} // No additional checks needed
+                case MEMBER: {
                     // For nested member classes, all the enclosing
                     // classes must be public or protected.
                     Symbol owner = c.owner;
@@ -3899,6 +3899,7 @@ public class Check {
                             return;
                         owner = owner.owner;
                     }
+                    break;
                 }
             }
 

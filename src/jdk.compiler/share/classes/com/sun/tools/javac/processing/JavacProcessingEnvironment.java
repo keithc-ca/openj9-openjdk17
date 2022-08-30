@@ -286,8 +286,8 @@ public class JavacProcessingEnvironment implements ProcessingEnvironment, Closea
                 if (options.isSet("accessInternalAPI"))
                     ModuleHelper.addExports(getClass().getModule(), processorClassLoader.getUnnamedModule());
 
-                if (processorClassLoader != null && processorClassLoader instanceof Closeable closeable) {
-                    compiler.closeables = compiler.closeables.prepend(closeable);
+                if (processorClassLoader != null && processorClassLoader instanceof Closeable) {
+                    compiler.closeables = compiler.closeables.prepend((Closeable)processorClassLoader);
                 }
             }
         } catch (SecurityException e) {
@@ -343,7 +343,7 @@ public class JavacProcessingEnvironment implements ProcessingEnvironment, Closea
             platformProcessors = platformProvider.getAnnotationProcessors()
                                                  .stream()
                                                  .map(PluginInfo::getPlugin)
-                                                 .toList();
+                                                 .collect(Collectors.toList());
         }
         List<Iterator<? extends Processor>> iterators = List.of(processorIterator,
                                                                 platformProcessors.iterator());
@@ -376,7 +376,8 @@ public class JavacProcessingEnvironment implements ProcessingEnvironment, Closea
      * @param e   If non-null, pass this exception to Abort
      */
     private Iterator<Processor> handleServiceLoaderUnavailability(String key, Exception e) {
-        if (fileManager instanceof JavacFileManager standardFileManager) {
+        if (fileManager instanceof JavacFileManager) {
+        	JavacFileManager standardFileManager = (JavacFileManager)fileManager;
             Iterable<? extends Path> workingPath = fileManager.hasLocation(ANNOTATION_PROCESSOR_PATH)
                 ? standardFileManager.getLocationAsPaths(ANNOTATION_PROCESSOR_PATH)
                 : standardFileManager.getLocationAsPaths(CLASS_PATH);
@@ -879,8 +880,8 @@ public class JavacProcessingEnvironment implements ProcessingEnvironment, Closea
          */
         public void close() {
             if (processorIterator != null &&
-                processorIterator instanceof ServiceIterator serviceIterator) {
-                serviceIterator.close();
+                processorIterator instanceof ServiceIterator) {
+                ((ServiceIterator)processorIterator).close();
             }
         }
     }

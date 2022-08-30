@@ -131,8 +131,8 @@ public class TreeMaker implements JCTree.Factory {
                 || node instanceof JCModuleDecl
                 || node instanceof JCSkip
                 || node instanceof JCErroneous
-                || (node instanceof JCExpressionStatement expressionStatement
-                    && expressionStatement.expr instanceof JCErroneous),
+                || (node instanceof JCExpressionStatement
+                    && ((JCExpressionStatement)node).expr instanceof JCErroneous),
                     () -> node.getClass().getSimpleName());
         JCCompilationUnit tree = new JCCompilationUnit(defs);
         tree.pos = pos;
@@ -910,8 +910,8 @@ public class TreeMaker implements JCTree.Factory {
         } else if (value instanceof Byte) {
             result = Literal(BYTE, value).
                 setType(syms.byteType.constType(value));
-        } else if (value instanceof Character charVal) {
-            int v = charVal.toString().charAt(0);
+        } else if (value instanceof Character) {
+            int v = ((Character)value).toString().charAt(0);
             result = Literal(CHAR, v).
                 setType(syms.charType.constType(v));
         } else if (value instanceof Double) {
@@ -923,8 +923,8 @@ public class TreeMaker implements JCTree.Factory {
         } else if (value instanceof Short) {
             result = Literal(SHORT, value).
                 setType(syms.shortType.constType(value));
-        } else if (value instanceof Boolean boolVal) {
-            int v = boolVal ? 1 : 0;
+        } else if (value instanceof Boolean) {
+            int v = ((Boolean)value) ? 1 : 0;
             result = Literal(BOOLEAN, v).
                 setType(syms.booleanType.constType(v));
         } else {
@@ -945,15 +945,15 @@ public class TreeMaker implements JCTree.Factory {
             result = QualIdent(e.value);
         }
         public void visitError(Attribute.Error e) {
-            if (e instanceof UnresolvedClass unresolvedClass) {
-                result = ClassLiteral(unresolvedClass.classType).setType(syms.classType);
+            if (e instanceof UnresolvedClass) {
+                result = ClassLiteral(((UnresolvedClass)e).classType).setType(syms.classType);
             } else {
                 result = Erroneous();
             }
         }
         public void visitCompound(Attribute.Compound compound) {
-            if (compound instanceof Attribute.TypeCompound typeCompound) {
-                result = visitTypeCompoundInternal(typeCompound);
+            if (compound instanceof Attribute.TypeCompound) {
+                result = visitTypeCompoundInternal((Attribute.TypeCompound)compound);
             } else {
                 result = visitCompoundInternal(compound);
             }

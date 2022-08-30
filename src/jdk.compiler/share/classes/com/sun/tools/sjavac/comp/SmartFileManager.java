@@ -82,9 +82,9 @@ public class SmartFileManager extends ForwardingJavaFileManager<JavaFileManager>
      * Set whether or not to use ct.sym as an alternate to rt.jar.
      */
     public void setSymbolFileEnabled(boolean b) {
-        if (!(fileManager instanceof JavacFileManager javacFileManager))
+        if (!(fileManager instanceof JavacFileManager))
             throw new IllegalStateException();
-        javacFileManager.setSymbolFileEnabled(b);
+        ((JavacFileManager)fileManager).setSymbolFileEnabled(b);
     }
 
     @DefinedBy(Api.COMPILER)
@@ -175,9 +175,9 @@ public class SmartFileManager extends ForwardingJavaFileManager<JavaFileManager>
     }
 
     private boolean isModuleInfo(FileObject fo) {
-        return (fo instanceof JavaFileObject javaFileObject)
-                && (javaFileObject.isNameCompatible("module-info", Kind.SOURCE)
-                    || javaFileObject.isNameCompatible("module-info", Kind.CLASS));
+        return (fo instanceof JavaFileObject)
+                && (((JavaFileObject)fo).isNameCompatible("module-info", Kind.SOURCE)
+                    || ((JavaFileObject)fo).isNameCompatible("module-info", Kind.CLASS));
     }
 
     @Override @DefinedBy(Api.COMPILER)
@@ -240,8 +240,8 @@ public class SmartFileManager extends ForwardingJavaFileManager<JavaFileManager>
     }
 
     private static FileObject locWrap(FileObject fo, Location loc) {
-        if (fo instanceof JavaFileObject javaFileObject)
-            return locWrap(javaFileObject, loc);
+        if (fo instanceof JavaFileObject)
+            return locWrap((JavaFileObject)fo, loc);
         return fo == null ? null : new FileObjectWithLocation<>(fo, loc);
     }
 
@@ -260,16 +260,16 @@ public class SmartFileManager extends ForwardingJavaFileManager<JavaFileManager>
     }
 
     private static FileObject locUnwrap(FileObject fo) {
-        if (fo instanceof FileObjectWithLocation<?> fileObjectWithLocation)
-            return fileObjectWithLocation.getDelegate();
-        if (fo instanceof JavaFileObjectWithLocation<?> javaFileObjectWithLocation)
-            return javaFileObjectWithLocation.getDelegate();
+        if (fo instanceof FileObjectWithLocation<?>)
+            return ((FileObjectWithLocation)fo).getDelegate();
+        if (fo instanceof JavaFileObjectWithLocation<?>)
+            return ((JavaFileObjectWithLocation<?>)fo).getDelegate();
         return fo;
     }
 
     private static JavaFileObject locUnwrap(JavaFileObject fo) {
-        if (fo instanceof JavaFileObjectWithLocation<?> javaFileObjectWithLocation)
-            return javaFileObjectWithLocation.getDelegate();
+        if (fo instanceof JavaFileObjectWithLocation<?>)
+            return ((JavaFileObjectWithLocation<?>)fo).getDelegate();
         return fo;
     }
 }

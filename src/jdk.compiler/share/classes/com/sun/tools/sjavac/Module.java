@@ -62,7 +62,7 @@ public class Module implements Comparable<Module> {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof Module module) && name.equals(module.name);
+        return (o instanceof Module) && name.equals(((Module)o).name);
     }
 
     @Override

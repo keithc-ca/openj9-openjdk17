@@ -755,7 +755,7 @@ public class Flow {
                 Symbol sym = todo.head;
                 todo = todo.tail;
                 switch (sym.kind) {
-                    case VAR -> {
+                    case VAR: {
                         Iterable<Symbol> constants = sym.owner
                                                         .members()
                                                         .getSymbols(s -> s.isEnum() &&
@@ -766,9 +766,10 @@ public class Flow {
                         if (hasAll && covered.add(sym.owner)) {
                             todo = todo.prepend(sym.owner);
                         }
+                        break;
                     }
 
-                    case TYP -> {
+                    case TYP: {
                         for (Type sup : types.directSupertypes(sym.type)) {
                             if (sup.tsym.kind == TYP && sup.tsym.isAbstract() && sup.tsym.isSealed()) {
                                 boolean hasAll = ((ClassSymbol) sup.tsym).permitted
@@ -780,6 +781,7 @@ public class Flow {
                                 }
                             }
                         }
+                        break;
                     }
                 }
             }
@@ -787,29 +789,29 @@ public class Flow {
 
         private boolean isExhaustive(Type seltype, Set<Symbol> covered) {
             transitiveCovers(covered);
-            return switch (seltype.getTag()) {
-                case CLASS -> {
+            switch (seltype.getTag()) {
+                case CLASS: {
                     if (seltype.isCompound()) {
                         if (seltype.isIntersection()) {
-                            yield ((Type.IntersectionClassType) seltype).getComponents().stream().anyMatch(t -> isExhaustive(t, covered));
+                            return ((Type.IntersectionClassType) seltype).getComponents().stream().anyMatch(t -> isExhaustive(t, covered));
                         }
-                        yield false;
+                        return false;
                     }
-                    yield covered.contains(seltype.tsym);
+                    return covered.contains(seltype.tsym);
                 }
-                case TYPEVAR -> isExhaustive(((TypeVar) seltype).getUpperBound(), covered);
-                default -> false;
-            };
+                case TYPEVAR: return isExhaustive(((TypeVar) seltype).getUpperBound(), covered);
+                default: return false;
+            }
         }
 
         public void visitTry(JCTry tree) {
             ListBuffer<PendingExit> prevPendingExits = pendingExits;
             pendingExits = new ListBuffer<>();
             for (JCTree resource : tree.resources) {
-                if (resource instanceof JCVariableDecl variableDecl) {
-                    visitVarDef(variableDecl);
-                } else if (resource instanceof JCExpression expression) {
-                    scan(expression);
+                if (resource instanceof JCVariableDecl) {
+                    visitVarDef((JCVariableDecl)resource);
+                } else if (resource instanceof JCExpression) {
+                    scan((JCExpression)resource);
                 } else {
                     throw new AssertionError(tree);  // parser error
                 }
@@ -999,7 +1001,8 @@ public class Flow {
             for (PendingExit exit = pendingExits.next();
                  exit != null;
                  exit = pendingExits.next()) {
-                if (exit instanceof ThrownPendingExit thrownExit) {
+                if (exit instanceof ThrownPendingExit) {
+                    ThrownPendingExit thrownExit = (ThrownPendingExit)exit;
                     if (classDef != null &&
                         classDef.pos == exit.tree.pos) {
                         log.error(exit.tree.pos(),
@@ -1277,10 +1280,10 @@ public class Flow {
             ListBuffer<PendingExit> prevPendingExits = pendingExits;
             pendingExits = new ListBuffer<>();
             for (JCTree resource : tree.resources) {
-                if (resource instanceof JCVariableDecl variableDecl) {
-                    visitVarDef(variableDecl);
-                } else if (resource instanceof JCExpression expression) {
-                    scan(expression);
+                if (resource instanceof JCVariableDecl) {
+                    visitVarDef((JCVariableDecl)resource);
+                } else if (resource instanceof JCExpression) {
+                    scan((JCExpression)resource);
                 } else {
                     throw new AssertionError(tree);  // parser error
                 }
@@ -2496,12 +2499,13 @@ public class Flow {
             final Bits initsTry = new Bits(inits);
             uninitsTry.assign(uninits);
             for (JCTree resource : tree.resources) {
-                if (resource instanceof JCVariableDecl variableDecl) {
+                if (resource instanceof JCVariableDecl) {
+                    JCVariableDecl variableDecl = (JCVariableDecl)resource;
                     visitVarDef(variableDecl);
                     unrefdResources.enter(variableDecl.sym);
                     resourceVarDecls.append(variableDecl);
-                } else if (resource instanceof JCExpression expression) {
-                    scanExpr(expression);
+                } else if (resource instanceof JCExpression) {
+                    scanExpr((JCExpression)resource);
                 } else {
                     throw new AssertionError(tree);  // parser error
                 }
@@ -2558,7 +2562,8 @@ public class Flow {
                     // versus finally!
                     while (exits.nonEmpty()) {
                         PendingExit exit = exits.next();
-                        if (exit instanceof AssignPendingExit assignPendingExit) {
+                        if (exit instanceof AssignPendingExit) {
+                            AssignPendingExit assignPendingExit = (AssignPendingExit)exit;
                             assignPendingExit.exit_inits.orSet(inits);
                             assignPendingExit.exit_uninits.andSet(uninits);
                         }
@@ -2952,11 +2957,12 @@ public class Flow {
         }
 
         void reportEffectivelyFinalError(DiagnosticPosition pos, Symbol sym) {
-            Fragment subKey = switch (currentTree.getTag()) {
-                case LAMBDA -> Fragments.Lambda;
-                case GUARDPATTERN -> Fragments.Guard;
-                case CLASSDEF -> Fragments.InnerCls;
-                default -> throw new AssertionError("Unexpected tree kind: " + currentTree.getTag());
+            Fragment subKey;
+            switch (currentTree.getTag()) {
+                case LAMBDA: subKey = Fragments.Lambda; break;
+                case GUARDPATTERN: subKey = Fragments.Guard; break;
+                case CLASSDEF: subKey = Fragments.InnerCls; break;
+                default: throw new AssertionError("Unexpected tree kind: " + currentTree.getTag());
             };
             log.error(pos, Errors.CantRefNonEffectivelyFinalVar(sym, diags.fragment(subKey)));
         }

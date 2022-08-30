@@ -119,8 +119,8 @@ public class ClientCodeWrapper {
     public JavaFileManager wrap(JavaFileManager fm) {
         if (isTrusted(fm))
             return fm;
-        return (fm instanceof StandardJavaFileManager standardJavaFileManager) ?
-                new WrappedStandardJavaFileManager(standardJavaFileManager) :
+        return (fm instanceof StandardJavaFileManager) ?
+                new WrappedStandardJavaFileManager((StandardJavaFileManager)fm) :
                 new WrappedJavaFileManager(fm);
     }
 
@@ -131,8 +131,8 @@ public class ClientCodeWrapper {
     }
 
     FileObject unwrap(FileObject fo) {
-        return (fo instanceof WrappedFileObject wrappedFileObject) ?
-                wrappedFileObject.clientFileObject : fo;
+        return (fo instanceof WrappedFileObject) ?
+                ((WrappedFileObject)fo).clientFileObject : fo;
     }
 
     public JavaFileObject wrap(JavaFileObject fo) {
@@ -149,8 +149,8 @@ public class ClientCodeWrapper {
     }
 
     JavaFileObject unwrap(JavaFileObject fo) {
-        return (fo instanceof WrappedJavaFileObject wrappedJavaFileObject) ?
-                ((JavaFileObject) wrappedJavaFileObject.clientFileObject) : fo;
+        return (fo instanceof WrappedJavaFileObject) ?
+                ((JavaFileObject) ((WrappedJavaFileObject)fo).clientFileObject) : fo;
     }
 
     public <T /*super JavaFileObject*/> DiagnosticListener<T> wrap(DiagnosticListener<T> dl) {
@@ -166,8 +166,8 @@ public class ClientCodeWrapper {
     }
 
     TaskListener unwrap(TaskListener l) {
-        return (l instanceof WrappedTaskListener wrappedTaskListener) ?
-                wrappedTaskListener.clientTaskListener : l;
+        return (l instanceof WrappedTaskListener) ?
+                ((WrappedTaskListener)l).clientTaskListener : l;
     }
 
     Collection<TaskListener> unwrap(Collection<? extends TaskListener> listeners) {
@@ -179,8 +179,8 @@ public class ClientCodeWrapper {
 
     @SuppressWarnings("unchecked")
     private <T> Diagnostic<T> unwrap(final Diagnostic<T> diagnostic) {
-        return (diagnostic instanceof JCDiagnostic jcDiagnostic) ?
-                (Diagnostic<T>) new DiagnosticSourceUnwrapper(jcDiagnostic) : diagnostic;
+        return (diagnostic instanceof JCDiagnostic) ?
+                (Diagnostic<T>) new DiagnosticSourceUnwrapper((JCDiagnostic)diagnostic) : diagnostic;
     }
 
     protected boolean isTrusted(Object o) {

@@ -1603,7 +1603,8 @@ public class Lower extends TreeTranslator {
         JCTree resource = resources.head;
         JCExpression resourceUse;
         boolean resourceNonNull;
-        if (resource instanceof JCVariableDecl variableDecl) {
+        if (resource instanceof JCVariableDecl) {
+            JCVariableDecl variableDecl = (JCVariableDecl)resource;
             resourceUse = make.Ident(variableDecl.sym).setType(resource.type);
             resourceNonNull = variableDecl.init != null && TreeInfo.skipParens(variableDecl.init).hasTag(NEWCLASS);
             stats.add(variableDecl);

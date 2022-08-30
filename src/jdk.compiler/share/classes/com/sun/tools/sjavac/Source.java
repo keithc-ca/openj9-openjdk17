@@ -72,7 +72,7 @@ public class Source implements Comparable<Source> {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof Source source) && name.equals(source.name);
+        return (o instanceof Source) && name.equals(((Source)o).name);
     }
 
     @Override

@@ -479,7 +479,8 @@ public class Arguments {
 
         // The following checks are to help avoid accidental confusion between
         // directories of modules and exploded module directories.
-        if (fm instanceof StandardJavaFileManager standardJavaFileManager) {
+        if (fm instanceof StandardJavaFileManager) {
+            StandardJavaFileManager standardJavaFileManager = (StandardJavaFileManager)fm;
             if (standardJavaFileManager.hasLocation(StandardLocation.CLASS_OUTPUT)) {
                 Path outDir = standardJavaFileManager.getLocationAsPaths(StandardLocation.CLASS_OUTPUT).iterator().next();
                 if (standardJavaFileManager.hasLocation(StandardLocation.MODULE_SOURCE_PATH)) {
@@ -565,7 +566,8 @@ public class Arguments {
 
         boolean lintOptions = options.isUnset(Option.XLINT_CUSTOM, "-" + LintCategory.OPTIONS.option);
         if (lintOptions && source.compareTo(Source.DEFAULT) < 0 && !options.isSet(Option.RELEASE)) {
-            if (fm instanceof BaseFileManager baseFileManager) {
+            if (fm instanceof BaseFileManager) {
+                BaseFileManager baseFileManager = (BaseFileManager)fm;
                 if (source.compareTo(Source.JDK8) <= 0) {
                     if (baseFileManager.isDefaultBootClassPath())
                         log.warning(LintCategory.OPTIONS, Warnings.SourceNoBootclasspath(source.name));
@@ -914,10 +916,10 @@ public class Arguments {
 
     private void report(DiagnosticInfo diag) {
         // Would be good to have support for -XDrawDiagnostics here
-        if (diag instanceof JCDiagnostic.Error errorDiag) {
-            log.error(errorDiag);
-        } else if (diag instanceof JCDiagnostic.Warning warningDiag){
-            log.warning(warningDiag);
+        if (diag instanceof JCDiagnostic.Error) {
+            log.error((JCDiagnostic.Error)diag);
+        } else if (diag instanceof JCDiagnostic.Warning){
+            log.warning((JCDiagnostic.Warning)diag);
         }
     }
 

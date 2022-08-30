@@ -103,9 +103,9 @@ public class TypeAnnotationPosition {
 
         @Override
         public boolean equals(Object other) {
-            return (other instanceof TypePathEntry entry)
-                    && this.tag == entry.tag
-                    && this.arg == entry.arg;
+            return (other instanceof TypePathEntry)
+                    && this.tag == ((TypePathEntry)other).tag
+                    && this.arg == ((TypePathEntry)other).arg;
         }
 
         @Override

@@ -1065,7 +1065,7 @@ public class JavaTokenizer extends UnicodeReader {
                     }
                     // Remove incidental indentation.
                     try {
-                        string = string.stripIndent();
+                        string = String17.stripIndent(string);
                     } catch (Exception ex) {
                         // Error already reported, just use unstripped string.
                     }
@@ -1074,7 +1074,7 @@ public class JavaTokenizer extends UnicodeReader {
                 // Translate escape sequences if present.
                 if (hasEscapeSequences) {
                     try {
-                        string = string.translateEscapes();
+                        string = String17.translateEscapes(string);
                     } catch (Exception ex) {
                         // Error already reported, just use untranslated string.
                     }
@@ -1346,4 +1346,143 @@ public class JavaTokenizer extends UnicodeReader {
             }
         }
     }
+
+    // String features copied from jdk17 that are not available in jdk11.
+    static final class String17 {
+        static String stripIndent(String s) {
+            int length = s.length();
+            if (length == 0) {
+                return "";
+            }
+            char lastChar = s.charAt(length - 1);
+            boolean optOut = lastChar == '\n' || lastChar == '\r';
+            java.util.List<String> lines = s.lines().collect(java.util.stream.Collectors.toList());
+            final int outdent = optOut ? 0 : outdent(lines);
+            return lines.stream()
+                    .map(line -> {
+                        int firstNonWhitespace = indexOfNonWhitespace(line);
+                        int lastNonWhitespace = lastIndexOfNonWhitespace(line);
+                        int incidentalWhitespace = Math.min(outdent, firstNonWhitespace);
+                        return firstNonWhitespace > lastNonWhitespace
+                                ? "" : line.substring(incidentalWhitespace, lastNonWhitespace);
+                    })
+                    .collect(java.util.stream.Collectors.joining("\n", "", optOut ? "\n" : ""));
+        }
+
+        static String translateEscapes(String s) {
+            if (s.isEmpty()) {
+                return "";
+            }
+            char[] chars = s.toCharArray();
+            int length = chars.length;
+            int from = 0;
+            int to = 0;
+            while (from < length) {
+                char ch = chars[from++];
+                if (ch == '\\') {
+                    ch = from < length ? chars[from++] : '\0';
+                    switch (ch) {
+                    case 'b':
+                        ch = '\b';
+                        break;
+                    case 'f':
+                        ch = '\f';
+                        break;
+                    case 'n':
+                        ch = '\n';
+                        break;
+                    case 'r':
+                        ch = '\r';
+                        break;
+                    case 's':
+                        ch = ' ';
+                        break;
+                    case 't':
+                        ch = '\t';
+                        break;
+                    case '\'':
+                    case '\"':
+                    case '\\':
+                        // as is
+                        break;
+                    case '0': case '1': case '2': case '3':
+                    case '4': case '5': case '6': case '7':
+                        int limit = Integer.min(from + (ch <= '3' ? 2 : 1), length);
+                        int code = ch - '0';
+                        while (from < limit) {
+                            ch = chars[from];
+                            if (ch < '0' || '7' < ch) {
+                                break;
+                            }
+                            from++;
+                            code = (code << 3) | (ch - '0');
+                        }
+                        ch = (char)code;
+                        break;
+                    case '\n':
+                        continue;
+                    case '\r':
+                        if (from < length && chars[from] == '\n') {
+                            from++;
+                        }
+                        continue;
+                    default: {
+                        String msg = String.format(
+                            "Invalid escape sequence: \\%c \\\\u%04X",
+                            ch, (int)ch);
+                        throw new IllegalArgumentException(msg);
+                    }
+                    }
+                }
+
+                chars[to++] = ch;
+            }
+
+            return new String(chars, 0, to);
+        }
+
+        static int indexOfNonWhitespace(String s) {
+            int length = s.length();
+            int left = 0;
+            while (left < length) {
+                char ch = s.charAt(left);
+                if (ch != ' ' && ch != '\t' && !Character.isWhitespace(ch)) {
+                    break;
+                }
+                left++;
+            }
+            return left;
+        }
+
+        static int lastIndexOfNonWhitespace(String s) {
+            int length = s.length();
+            int right = length;
+            while (0 < right) {
+                char ch = s.charAt(right - 1);
+                if (ch != ' ' && ch != '\t' && !Character.isWhitespace(ch)) {
+                    break;
+                }
+                right--;
+            }
+            return right;
+        }
+
+        static int outdent(java.util.List<String> lines) {
+            // Note: outdent is guaranteed to be zero or positive number.
+            // If there isn't a non-blank line then the last must be blank
+            int outdent = Integer.MAX_VALUE;
+            for (String line : lines) {
+                int leadingWhitespace = indexOfNonWhitespace(line);
+                if (leadingWhitespace != line.length()) {
+                    outdent = Integer.min(outdent, leadingWhitespace);
+                }
+            }
+            String lastLine = lines.get(lines.size() - 1);
+            if (lastLine.isBlank()) {
+                outdent = Integer.min(outdent, lastLine.length());
+            }
+            return outdent;
+        }
+    }
+
 }

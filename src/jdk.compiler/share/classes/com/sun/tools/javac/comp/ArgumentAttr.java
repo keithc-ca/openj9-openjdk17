@@ -743,9 +743,9 @@ public class ArgumentAttr extends JCTree.Visitor {
 
         @Override
         public boolean equals(Object obj) {
-            return (obj instanceof UniquePos uniquePos)
-                    && pos == uniquePos.pos
-                    && source == uniquePos.source;
+            return (obj instanceof UniquePos)
+                    && pos == ((UniquePos)obj).pos
+                    && source == ((UniquePos)obj).source;
         }
 
         @Override

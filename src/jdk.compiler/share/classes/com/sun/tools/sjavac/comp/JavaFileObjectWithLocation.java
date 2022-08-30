@@ -60,8 +60,8 @@ public class JavaFileObjectWithLocation<F extends JavaFileObject> extends Forwar
 
     @Override
     public boolean equals(Object obj) {
-        return (obj instanceof JavaFileObjectWithLocation<?> javaFileObjectWithLocation)
-                && loc.equals(javaFileObjectWithLocation.loc)
-                && fileObject.equals(javaFileObjectWithLocation.fileObject);
+        return (obj instanceof JavaFileObjectWithLocation<?>)
+                && loc.equals(((JavaFileObjectWithLocation<?>)obj).loc)
+                && fileObject.equals(((JavaFileObjectWithLocation<?>)obj).fileObject);
     }
 }

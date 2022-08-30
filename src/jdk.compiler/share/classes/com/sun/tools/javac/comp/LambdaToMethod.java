@@ -197,9 +197,9 @@ public class LambdaToMethod extends TreeTranslator {
 
         @Override
         public boolean equals(Object o) {
-            return (o instanceof DedupedLambda dedupedLambda)
-                    && types.isSameType(symbol.asType(), dedupedLambda.symbol.asType())
-                    && new TreeDiffer(symbol.params(), dedupedLambda.symbol.params()).scan(tree, dedupedLambda.tree);
+            return (o instanceof DedupedLambda)
+                    && types.isSameType(symbol.asType(), ((DedupedLambda)o).symbol.asType())
+                    && new TreeDiffer(symbol.params(), ((DedupedLambda)o).symbol.params()).scan(tree, ((DedupedLambda)o).tree);
         }
     }
 
@@ -1555,7 +1555,8 @@ public class LambdaToMethod extends TreeTranslator {
         @Override
         public void visitVarDef(JCVariableDecl tree) {
             TranslationContext<?> context = context();
-            if (context != null && context instanceof LambdaTranslationContext lambdaContext) {
+            if (context != null && context instanceof LambdaTranslationContext) {
+                LambdaTranslationContext lambdaContext = (LambdaTranslationContext)context;
                 if (frameStack.head.tree.hasTag(LAMBDA)) {
                     lambdaContext.addSymbol(tree.sym, LOCAL_VAR);
                 }
@@ -1761,11 +1762,11 @@ public class LambdaToMethod extends TreeTranslator {
          *  set of nodes that select `this' (qualified this)
          */
         private boolean lambdaFieldAccessFilter(JCFieldAccess fAccess) {
-            return (context instanceof LambdaTranslationContext lambdaContext)
+            return (context instanceof LambdaTranslationContext)
                     && !fAccess.sym.isStatic()
                     && fAccess.name == names._this
                     && (fAccess.sym.owner.kind == TYP)
-                    && !lambdaContext.translatedSymbols.get(CAPTURED_OUTER_THIS).isEmpty();
+                    && !((LambdaTranslationContext)context).translatedSymbols.get(CAPTURED_OUTER_THIS).isEmpty();
         }
 
         /**

@@ -90,8 +90,8 @@ public class PublicApiCollector implements TaskListener {
 
     private void collectClassSymbols(JCCompilationUnit cu) {
         for (Tree t : cu.getTypeDecls()) {
-            if (t instanceof JCClassDecl classDecl)  // Can also be a JCSkip
-                classSymbols.add(classDecl.sym);
+            if (t instanceof JCClassDecl)  // Can also be a JCSkip
+                classSymbols.add(((JCClassDecl)t).sym);
         }
     }
 

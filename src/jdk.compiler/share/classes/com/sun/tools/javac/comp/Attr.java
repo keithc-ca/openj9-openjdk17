@@ -433,8 +433,8 @@ public class Attr extends JCTree.Visitor {
         } catch (BreakAttr b) {
             return b.env;
         } catch (AssertionError ae) {
-            if (ae.getCause() instanceof BreakAttr breakAttr) {
-                return breakAttr.env;
+            if (ae.getCause() instanceof BreakAttr) {
+                return ((BreakAttr)ae.getCause()).env;
             } else {
                 throw ae;
             }

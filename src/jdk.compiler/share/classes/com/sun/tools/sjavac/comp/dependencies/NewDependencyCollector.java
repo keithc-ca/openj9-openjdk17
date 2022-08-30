@@ -111,8 +111,8 @@ public class NewDependencyCollector implements TaskListener {
 
     private Location getLocationOf(ClassSymbol cs) {
         JavaFileObject jfo = cs.outermostClass().classfile;
-        if (jfo instanceof JavaFileObjectWithLocation<?> javaFileObjectWithLocation) {
-            return javaFileObjectWithLocation.getLocation();
+        if (jfo instanceof JavaFileObjectWithLocation<?>) {
+            return ((JavaFileObjectWithLocation<?>)jfo).getLocation();
         }
 
         // jfo is most likely on PLATFORM_CLASS_PATH.
@@ -177,9 +177,10 @@ public class NewDependencyCollector implements TaskListener {
     }
 
     private Set<ClassSymbol> allSupertypes(TypeSymbol t) {
-        if (t == null || !(t instanceof ClassSymbol classSymbol)) {
+        if (t == null || !(t instanceof ClassSymbol)) {
             return Collections.emptySet();
         }
+        ClassSymbol classSymbol = (ClassSymbol)t;
         Set<ClassSymbol> result = new HashSet<>();
         result.add(classSymbol);
         result.addAll(allSupertypes(classSymbol.getSuperclass().tsym));

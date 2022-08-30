@@ -117,7 +117,7 @@ public class Package implements Comparable<Package> {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof Package pac) && name.equals(pac.name);
+        return (o instanceof Package) && name.equals(((Package)o).name);
     }
 
     @Override

@@ -542,14 +542,15 @@ public class JavacFiler implements Filer, Closeable {
                                          relativeName.toString(), null);
         checkFileReopening(fileObject, true);
 
-        if (fileObject instanceof JavaFileObject javaFileObject)
-            return new FilerOutputJavaFileObject(msym, null, javaFileObject);
+        if (fileObject instanceof JavaFileObject)
+            return new FilerOutputJavaFileObject(msym, null, (JavaFileObject)fileObject);
         else
             return new FilerOutputFileObject(msym, null, fileObject);
     }
 
     private void locationCheck(JavaFileManager.Location location) {
-        if (location instanceof StandardLocation standardLocation) {
+        if (location instanceof StandardLocation) {
+            StandardLocation standardLocation = (StandardLocation)location;
             if (!standardLocation.isOutputLocation())
                 throw new IllegalArgumentException("Resource creation not supported in location " +
                                                     standardLocation);
@@ -888,8 +889,9 @@ public class JavacFiler implements Filer, Closeable {
          * subject to annotation processing.
          */
         if ((typeName != null)) {
-            if (!(fileObject instanceof JavaFileObject javaFileObject))
+            if (!(fileObject instanceof JavaFileObject))
                 throw new AssertionError("JavaFileObject not found for " + fileObject);
+            JavaFileObject javaFileObject = (JavaFileObject)fileObject;
             switch(javaFileObject.getKind()) {
             case SOURCE:
                 generatedSourceNames.add(typeName);

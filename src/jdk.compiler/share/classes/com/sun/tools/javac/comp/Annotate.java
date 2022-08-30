@@ -410,9 +410,9 @@ public class Annotate {
     }
     //where:
         private boolean isAttributeTrue(Attribute attr) {
-            return (attr instanceof Attribute.Constant constant)
-                    && constant.type == syms.booleanType
-                    && ((Integer) constant.value) != 0;
+            return (attr instanceof Attribute.Constant)
+                    && ((Attribute.Constant)attr).type == syms.booleanType
+                    && ((Integer) ((Attribute.Constant)attr).value) != 0;
         }
 
     /**
@@ -449,7 +449,7 @@ public class Annotate {
     {
         // The attribute might have been entered if it is Target or Repeatable
         // Because TreeCopier does not copy type, redo this if type is null
-        if (a.attribute == null || a.type == null || !(a.attribute instanceof Attribute.TypeCompound typeCompound)) {
+        if (a.attribute == null || a.type == null || !(a.attribute instanceof Attribute.TypeCompound)) {
             // Create a new TypeCompound
             List<Pair<MethodSymbol,Attribute>> elems =
                     attributeAnnotationValues(a, expectedAnnotationType, env);
@@ -460,7 +460,7 @@ public class Annotate {
             return tc;
         } else {
             // Use an existing TypeCompound
-            return typeCompound;
+            return (Attribute.TypeCompound)a.attribute;
         }
     }
 
@@ -919,12 +919,12 @@ public class Annotate {
             log.error(pos, Errors.InvalidRepeatableAnnotation(annoDecl));
             return null;
         }
-        if (!(p.snd instanceof Attribute.Class attributeClass)) { // check that the value of "value" is an Attribute.Class
+        if (!(p.snd instanceof Attribute.Class)) { // check that the value of "value" is an Attribute.Class
             log.error(pos, Errors.InvalidRepeatableAnnotation(annoDecl));
             return null;
         }
 
-        return attributeClass.getValue();
+        return ((Attribute.Class)p.snd).getValue();
     }
 
     /* Validate that the suggested targetContainerType Type is a valid

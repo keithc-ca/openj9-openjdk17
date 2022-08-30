@@ -138,8 +138,8 @@ public class PathAndPackageVerifier implements TaskListener {
         @Override
         public String next() {
             Name name;
-            if (next instanceof JCIdent identNext) {
-                name = identNext.name;
+            if (next instanceof JCIdent) {
+                name = ((JCIdent)next).name;
                 next = null;
             } else {
                 JCFieldAccess fa = (JCFieldAccess) next;

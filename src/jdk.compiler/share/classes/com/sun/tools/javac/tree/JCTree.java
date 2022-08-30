@@ -2220,7 +2220,7 @@ public abstract class JCTree implements Tree, Cloneable, DiagnosticPosition {
 
         @Override @DefinedBy(Api.COMPILER_TREE)
         public JCPattern getPattern() {
-            return pattern instanceof JCPattern jcPattern ? jcPattern : null;
+            return pattern instanceof JCPattern ? (JCPattern)pattern : null;
         }
 
         @DefinedBy(Api.COMPILER_TREE)

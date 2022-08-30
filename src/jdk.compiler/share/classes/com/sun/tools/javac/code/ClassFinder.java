@@ -209,11 +209,11 @@ public class ClassFinder {
         // Temporary, until more info is available from the module system.
         boolean useCtProps;
         JavaFileManager fm = context.get(JavaFileManager.class);
-        if (fm instanceof DelegatingJavaFileManager delegatingJavaFileManager) {
-            fm = delegatingJavaFileManager.getBaseFileManager();
+        if (fm instanceof DelegatingJavaFileManager) {
+            fm = ((DelegatingJavaFileManager)fm).getBaseFileManager();
         }
-        if (fm instanceof JavacFileManager javacFileManager) {
-            useCtProps = javacFileManager.isDefaultBootClassPath() && javacFileManager.isSymbolFileEnabled();
+        if (fm instanceof JavacFileManager) {
+            useCtProps = ((JavacFileManager)fm).isDefaultBootClassPath() && ((JavacFileManager)fm).isSymbolFileEnabled();
         } else if (fm.getClass().getName().equals("com.sun.tools.sjavac.comp.SmartFileManager")) {
             useCtProps = !options.isSet("ignore.symbol.file");
         } else {
@@ -641,7 +641,8 @@ public class ClassFinder {
 
         if (verbose && verbosePath) {
             verbosePath = false; // print once per compile
-            if (fileManager instanceof StandardJavaFileManager standardJavaFileManager) {
+            if (fileManager instanceof StandardJavaFileManager) {
+            	StandardJavaFileManager standardJavaFileManager = (StandardJavaFileManager)fileManager;
                 if (haveSourcePath && wantSourceFiles) {
                     List<Path> path = List.nil();
                     for (Path sourcePath : standardJavaFileManager.getLocationAsPaths(SOURCE_PATH)) {

@@ -258,9 +258,10 @@ public class Main {
 
         // init file manager
         fileManager = context.get(JavaFileManager.class);
-        JavaFileManager undel = fileManager instanceof DelegatingJavaFileManager delegatingJavaFileManager ?
-                delegatingJavaFileManager.getBaseFileManager() : fileManager;
-        if (undel instanceof BaseFileManager baseFileManager) {
+        JavaFileManager undel = fileManager instanceof DelegatingJavaFileManager ?
+                ((DelegatingJavaFileManager)fileManager).getBaseFileManager() : fileManager;
+        if (undel instanceof BaseFileManager) {
+            BaseFileManager baseFileManager = (BaseFileManager)undel;
             baseFileManager.setContext(context); // reinit with options
             ok &= baseFileManager.handleOptions(args.getDeferredFileManagerOptions());
         }
