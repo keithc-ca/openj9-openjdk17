@@ -215,8 +215,8 @@ public class IndexItem {
         Objects.requireNonNull(link);
 
         switch (docTree.getKind()) {
-            case INDEX, SYSTEM_PROPERTY -> { }
-            default -> throw new IllegalArgumentException(docTree.getKind().toString());
+            case INDEX: case SYSTEM_PROPERTY: break;
+            default: throw new IllegalArgumentException(docTree.getKind().toString());
         }
 
         return new IndexItem(element, label, link.toString()) {
@@ -342,10 +342,10 @@ public class IndexItem {
     }
 
     protected Category getCategory(DocTree docTree) {
-        return switch (docTree.getKind()) {
-            case INDEX, SYSTEM_PROPERTY -> Category.TAGS;
-            default -> throw new IllegalArgumentException(docTree.getKind().toString());
-        };
+        switch (docTree.getKind()) {
+            case INDEX: case SYSTEM_PROPERTY: return Category.TAGS;
+            default: throw new IllegalArgumentException(docTree.getKind().toString());
+        }
     }
 
     protected Category getCategory(Element element) {

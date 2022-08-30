@@ -27,6 +27,7 @@ package jdk.javadoc.internal.doclets.toolkit.builders;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -316,8 +317,8 @@ public abstract class MemberSummaryBuilder extends AbstractMemberBuilder {
                 fullBody.addAll(cmtutils.makeFirstSentenceTree(text));
             }
             List<? extends DocTree> propertyTags = utils.getBlockTags(property,
-                    t -> (t instanceof UnknownBlockTagTree tree)
-                            && (tree.getTagName().equals("propertyDescription")));
+                    t -> (t instanceof UnknownBlockTagTree)
+                            && (((UnknownBlockTagTree)t).getTagName().equals("propertyDescription")));
             if (propertyTags.isEmpty()) {
                 List<? extends DocTree> comment = utils.getFullBody(property);
                 blockTags.addAll(cmtutils.makePropertyDescriptionTree(comment));
@@ -331,8 +332,8 @@ public abstract class MemberSummaryBuilder extends AbstractMemberBuilder {
         blockTags.addAll(tags);
 
         List<? extends DocTree> bTags = utils.getBlockTags(property,
-                t -> (t instanceof UnknownBlockTagTree tree)
-                        && (tree.getTagName().equals("defaultValue")));
+                t -> (t instanceof UnknownBlockTagTree)
+                        && (((UnknownBlockTagTree)t).getTagName().equals("defaultValue")));
         blockTags.addAll(bTags);
 
         //add @see tags
@@ -405,7 +406,7 @@ public abstract class MemberSummaryBuilder extends AbstractMemberBuilder {
 
             List<? extends Element> members = inheritedMembersFromMap.stream()
                     .filter(e -> utils.getEnclosingTypeElement(e) == inheritedClass)
-                    .toList();
+                    .collect(Collectors.toList());
 
             if (!members.isEmpty()) {
                 SortedSet<Element> inheritedMembers = new TreeSet<>(comparator);

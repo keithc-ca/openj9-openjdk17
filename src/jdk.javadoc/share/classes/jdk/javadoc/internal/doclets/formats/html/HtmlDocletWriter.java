@@ -995,32 +995,35 @@ public class HtmlDocletWriter {
         String seeText = utils.normalizeNewlines(ch.getText(see)).toString();
         List<? extends DocTree> label;
         switch (kind) {
-            case LINK, LINK_PLAIN ->
+            case LINK: case LINK_PLAIN:
                 // {@link[plain] reference label...}
                 label = ((LinkTree) see).getLabel();
+                break;
 
-            case SEE -> {
+            case SEE: {
                 List<? extends DocTree> ref = ((SeeTree) see).getReference();
                 assert !ref.isEmpty();
                 switch (ref.get(0).getKind()) {
-                    case TEXT -> {
+                    case TEXT: {
                         // @see "Reference"
                         return Text.of(seeText);
                     }
-                    case START_ELEMENT -> {
+                    case START_ELEMENT: {
                         // @see <a href="...">...</a>
                         return new RawHtml(replaceDocRootDir(removeTrailingSlash(seeText)));
                     }
-                    case REFERENCE -> {
+                    case REFERENCE: {
                         // @see reference label...
                         label = ref.subList(1, ref.size());
+                        break;
                     }
-                    default ->
+                    default:
                         throw new IllegalStateException(ref.get(0).getKind().toString());
                 }
+                break;
             }
 
-            default ->
+            default:
                 throw new IllegalStateException(kind.toString());
         }
 
@@ -1110,8 +1113,8 @@ public class HtmlDocletWriter {
                 // documented, this must be an inherited link.  Redirect it.
                 // The current class either overrides the referenced member or
                 // inherits it automatically.
-                if (this instanceof ClassWriterImpl writer) {
-                    containing = writer.getTypeElement();
+                if (this instanceof ClassWriterImpl) {
+                    containing = ((ClassWriterImpl)this).getTypeElement();
                 } else if (!utils.isPublic(containing)) {
                     messages.warning(
                         ch.getDocTreePath(see), "doclet.see.class_or_package_not_accessible",
@@ -1649,10 +1652,10 @@ public class HtmlDocletWriter {
         // in their respective writers, but other uses of the method are only interested in TypeElements.
         Element currentPageElement = getCurrentPageElement();
         if (currentPageElement == null) {
-            if (this instanceof PackageWriterImpl packageWriter) {
-                currentPageElement = packageWriter.packageElement;
-            } else if (this instanceof ModuleWriterImpl moduleWriter) {
-                currentPageElement = moduleWriter.mdle;
+            if (this instanceof PackageWriterImpl) {
+                currentPageElement = ((PackageWriterImpl)this).packageElement;
+            } else if (this instanceof ModuleWriterImpl) {
+                currentPageElement = ((ModuleWriterImpl)this).mdle;
             }
         }
         // Redirect link if the current writer is not the primary writer for the source element.
@@ -1666,8 +1669,8 @@ public class HtmlDocletWriter {
      * element of this writer.
      */
     private boolean inSamePackage(Element element) {
-        Element currentPageElement = (this instanceof PackageWriterImpl packageWriter)
-                ? packageWriter.packageElement : getCurrentPageElement();
+        Element currentPageElement = (this instanceof PackageWriterImpl)
+                ? ((PackageWriterImpl)this).packageElement : getCurrentPageElement();
         return currentPageElement != null && !utils.isModule(element)
                 && utils.containingPackage(currentPageElement) == utils.containingPackage(element);
     }
@@ -2157,11 +2160,12 @@ public class HtmlDocletWriter {
     List<DocPath> getLocalStylesheets(Element element) throws DocFileIOException {
         List<DocPath> stylesheets = new ArrayList<>();
         DocPath basePath = null;
-        if (element instanceof PackageElement pkg) {
+        if (element instanceof PackageElement) {
+            PackageElement pkg = (PackageElement)element;
             stylesheets.addAll(getModuleStylesheets(pkg));
             basePath = docPaths.forPackage(pkg);
-        } else if (element instanceof ModuleElement mdle) {
-            basePath = DocPaths.forModule(mdle);
+        } else if (element instanceof ModuleElement) {
+            basePath = DocPaths.forModule((ModuleElement)element);
         }
         for (DocPath stylesheet : getStylesheets(element)) {
             stylesheets.add(basePath.resolve(stylesheet.getPath()));
@@ -2207,13 +2211,19 @@ public class HtmlDocletWriter {
             //in Java platform:
             HtmlTree previewDiv = HtmlTree.DIV(HtmlStyle.previewBlock);
             previewDiv.setId(htmlIds.forPreviewSection(forWhat));
-            String name = (switch (forWhat.getKind()) {
-                case PACKAGE, MODULE ->
-                        ((QualifiedNameable) forWhat).getQualifiedName();
-                case CONSTRUCTOR ->
-                        ((TypeElement) forWhat.getEnclosingElement()).getSimpleName();
-                default -> forWhat.getSimpleName();
-            }).toString();
+            Object nameObject;
+            switch (forWhat.getKind()) {
+                case PACKAGE: case MODULE:
+                    nameObject = ((QualifiedNameable) forWhat).getQualifiedName();
+                    break;
+                case CONSTRUCTOR:
+                    nameObject = ((TypeElement) forWhat.getEnclosingElement()).getSimpleName();
+                    break;
+                default:
+                    nameObject = forWhat.getSimpleName();
+                    break;
+            }
+            String name = nameObject.toString();
             Content nameCode = HtmlTree.CODE(Text.of(name));
             boolean isReflectivePreview = utils.isReflectivePreviewAPI(forWhat);
             String leadingNoteKey =

@@ -318,7 +318,8 @@ public class TagletWriterImpl extends TagletWriter {
             links.add(htmlWriter.seeTagToContent(holder, dt, context.within(dt)));
         }
         if (utils.isVariableElement(holder) && ((VariableElement)holder).getConstantValue() != null &&
-                htmlWriter instanceof ClassWriterImpl writer) {
+                htmlWriter instanceof ClassWriterImpl) {
+            ClassWriterImpl writer = (ClassWriterImpl)htmlWriter;
             //Automatically add link to constant values page for constant fields.
             DocPath constantsPath =
                     htmlWriter.pathToRoot.resolve(DocPaths.CONSTANT_VALUES);
@@ -503,11 +504,13 @@ public class TagletWriterImpl extends TagletWriter {
 
                     @Override
                     public String visitUnknown(Element e, Void p) {
-                        if (e instanceof DocletElement de) {
-                            return switch (de.getSubKind()) {
-                                case OVERVIEW -> resources.getText("doclet.Overview");
-                                case DOCFILE -> getHolderName(de);
-                            };
+                        if (e instanceof DocletElement) {
+                        	DocletElement de = (DocletElement)e;
+                            switch (de.getSubKind()) {
+                                case OVERVIEW: return resources.getText("doclet.Overview");
+                                case DOCFILE: return getHolderName(de);
+                                default: throw new IllegalArgumentException();
+                            }
                         } else {
                             return super.visitUnknown(e, p);
                         }

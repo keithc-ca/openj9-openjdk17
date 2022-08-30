@@ -379,12 +379,13 @@ public class Table extends Content {
         } else {
             main = new ContentBuilder();
         }
-        HtmlStyle columnStyle = switch (columnStyles.size()) {
-            case 2 -> HtmlStyle.twoColumnSummary;
-            case 3 -> HtmlStyle.threeColumnSummary;
-            case 4 -> HtmlStyle.fourColumnSummary;
-            default -> throw new IllegalStateException();
-        };
+        HtmlStyle columnStyle;
+        switch (columnStyles.size()) {
+            case 2: columnStyle = HtmlStyle.twoColumnSummary; break;
+            case 3: columnStyle = HtmlStyle.threeColumnSummary; break;
+            case 4: columnStyle = HtmlStyle.fourColumnSummary; break;
+            default: throw new IllegalStateException();
+        }
 
         HtmlTree table = new HtmlTree(TagName.DIV).setStyle(tableStyle).addStyle(columnStyle);
         if ((tabMap == null || tabs.size() == 1) && !alwaysShowDefaultTab) {

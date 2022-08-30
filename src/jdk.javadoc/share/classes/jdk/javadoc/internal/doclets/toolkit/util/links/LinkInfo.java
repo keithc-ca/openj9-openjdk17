@@ -128,7 +128,7 @@ public abstract class LinkInfo {
         } else if (isLinkable()) {
             Content tlabel = newContent();
             Utils utils = configuration.utils;
-            tlabel.add(type instanceof DeclaredType dt && utils.isGenericType(dt.getEnclosingType())
+            tlabel.add(type instanceof DeclaredType && utils.isGenericType(((DeclaredType)type).getEnclosingType())
                     // If enclosing type is rendered as separate links only use own class name
                     ? typeElement.getSimpleName().toString()
                     : configuration.utils.getSimpleName(typeElement));

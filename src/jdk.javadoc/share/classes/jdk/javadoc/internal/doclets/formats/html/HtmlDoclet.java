@@ -325,16 +325,17 @@ public class HtmlDoclet extends AbstractDoclet {
         Path legalNoticesDir;
         String legalNotices = configuration.getOptions().legalNotices();
         switch (legalNotices) {
-            case "", "default" -> {
+            case "": case "default" : {
                 Path javaHome = Path.of(System.getProperty("java.home"));
                 legalNoticesDir = javaHome.resolve("legal").resolve(getClass().getModule().getName());
+                break;
             }
 
-            case "none" -> {
+            case "none": {
                 return;
             }
 
-            default -> {
+            default: {
                 try {
                     legalNoticesDir = Path.of(legalNotices);
                 } catch (InvalidPathException e) {
@@ -342,6 +343,7 @@ public class HtmlDoclet extends AbstractDoclet {
                             legalNotices, e.getMessage());
                     return;
                 }
+                break;
             }
         }
 

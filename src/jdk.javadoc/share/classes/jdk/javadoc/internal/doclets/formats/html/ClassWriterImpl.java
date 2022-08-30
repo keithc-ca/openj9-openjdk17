@@ -449,9 +449,9 @@ public class ClassWriterImpl extends SubWriterHolderWriter implements ClassWrite
                 isFirst = false;
             }
             // TODO: should we simply split this method up to avoid instanceof ?
-            if (type instanceof TypeElement te) {
+            if (type instanceof TypeElement) {
                 Content link = getLink(
-                        new HtmlLinkInfo(configuration, context, te));
+                        new HtmlLinkInfo(configuration, context, (TypeElement)type));
                 content.add(HtmlTree.CODE(link));
             } else {
                 Content link = getLink(

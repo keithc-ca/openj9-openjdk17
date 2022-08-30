@@ -409,29 +409,31 @@ public class HtmlLinkInfo extends LinkInfo {
 
     @Override
     public boolean includeTypeParameterLinks() {
-        return switch (context) {
-            case IMPLEMENTED_INTERFACES,
-                 SUPER_INTERFACES,
-                 SUBINTERFACES,
-                 CLASS_TREE_PARENT,
-                 TREE,
-                 CLASS_SIGNATURE_PARENT_NAME,
-                 PERMITTED_SUBCLASSES,
-                 PACKAGE,
-                 CLASS_USE,
-                 CLASS_HEADER,
-                 CLASS_SIGNATURE,
-                 RECEIVER_TYPE,
-                 MEMBER_TYPE_PARAMS -> true;
+        switch (context) {
+            case IMPLEMENTED_INTERFACES:
+            case SUPER_INTERFACES:
+            case SUBINTERFACES:
+            case CLASS_TREE_PARENT:
+            case TREE:
+            case CLASS_SIGNATURE_PARENT_NAME:
+            case PERMITTED_SUBCLASSES:
+            case PACKAGE:
+            case CLASS_USE:
+            case CLASS_HEADER:
+            case CLASS_SIGNATURE:
+            case RECEIVER_TYPE:
+            case MEMBER_TYPE_PARAMS:
+                return true;
 
-            case IMPLEMENTED_CLASSES,
-                 SUBCLASSES,
-                 EXECUTABLE_ELEMENT_COPY,
-                 PROPERTY_COPY,
-                 CLASS_USE_HEADER -> false;
+            case IMPLEMENTED_CLASSES:
+            case SUBCLASSES:
+            case EXECUTABLE_ELEMENT_COPY:
+            case PROPERTY_COPY:
+            case CLASS_USE_HEADER:
+                return false;
 
-            default -> label == null || label.isEmpty();
-        };
+            default: return label == null || label.isEmpty();
+        }
     }
 
     @Override

@@ -495,20 +495,20 @@ public class Comparators {
         }
 
         private int getKindIndex(Element e) {
-            return switch (e.getKind()) {
-                case MODULE ->          0;
-                case PACKAGE ->         1;
-                case CLASS ->           2;
-                case ENUM ->            3;
-                case ENUM_CONSTANT ->   4;
-                case RECORD ->          5;
-                case INTERFACE ->       6;
-                case ANNOTATION_TYPE -> 7;
-                case FIELD ->           8;
-                case CONSTRUCTOR ->     9;
-                case METHOD ->          10;
-                default -> throw new IllegalArgumentException(e.getKind().toString());
-            };
+            switch (e.getKind()) {
+                case MODULE:          return 0;
+                case PACKAGE:         return 1;
+                case CLASS:           return 2;
+                case ENUM:            return 3;
+                case ENUM_CONSTANT:   return 4;
+                case RECORD:          return 5;
+                case INTERFACE:       return 6;
+                case ANNOTATION_TYPE: return 7;
+                case FIELD:           return 8;
+                case CONSTRUCTOR:     return 9;
+                case METHOD:          return 10;
+                default: throw new IllegalArgumentException(e.getKind().toString());
+            }
         }
 
         boolean hasParameters(Element e) {

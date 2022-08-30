@@ -27,6 +27,7 @@ package jdk.javadoc.internal.doclets.formats.html;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -353,19 +354,20 @@ public class Navigation {
      */
     private void addSummaryLinks(Content tree) {
         switch (documentedPage) {
-            case MODULE, PACKAGE, CLASS, HELP -> {
+            case MODULE: case PACKAGE: case CLASS: case HELP: {
                 List<? extends Content> listContents = subNavLinks.getSubNavLinks()
-                        .stream().map(HtmlTree::LI).toList();
+                        .stream().map(HtmlTree::LI).collect(Collectors.toList());
                 if (!listContents.isEmpty()) {
-                    tree.add(HtmlTree.LI(switch (documentedPage) {
-                        case MODULE -> contents.moduleSubNavLabel;
-                        case PACKAGE -> contents.packageSubNavLabel;
-                        case CLASS -> contents.summaryLabel;
-                        case HELP -> contents.helpSubNavLabel;
-                        default -> Text.EMPTY;
-                    }).add(Entity.NO_BREAK_SPACE));
+                    switch (documentedPage) {
+                        case MODULE: tree.add(HtmlTree.LI(contents.moduleSubNavLabel)).add(Entity.NO_BREAK_SPACE); break;
+                        case PACKAGE: tree.add(HtmlTree.LI(contents.packageSubNavLabel)).add(Entity.NO_BREAK_SPACE); break;
+                        case CLASS: tree.add(HtmlTree.LI(contents.summaryLabel)).add(Entity.NO_BREAK_SPACE); break;
+                        case HELP: tree.add(HtmlTree.LI(contents.helpSubNavLabel)).add(Entity.NO_BREAK_SPACE); break;
+                        default: tree.add(HtmlTree.LI(Text.EMPTY)).add(Entity.NO_BREAK_SPACE); break;
+                    }
                     addListToNav(listContents, tree);
                 }
+                break;
             }
         }
     }
@@ -410,18 +412,33 @@ public class Navigation {
      * @param listContents the list of contents to which the detail will be added.
      */
     protected void addTypeDetailLink(VisibleMemberTable.Kind kind, boolean link, List<Content> listContents) {
-        addContentToList(listContents, switch (kind) {
-            case CONSTRUCTORS -> links.createLink(HtmlIds.CONSTRUCTOR_DETAIL, contents.navConstructor, link);
-            case ENUM_CONSTANTS -> links.createLink(HtmlIds.ENUM_CONSTANT_DETAIL, contents.navEnum, link);
-            case FIELDS -> links.createLink(HtmlIds.FIELD_DETAIL, contents.navField, link);
-            case METHODS -> links.createLink(HtmlIds.METHOD_DETAIL, contents.navMethod, link);
-            case PROPERTIES -> links.createLink(HtmlIds.PROPERTY_DETAIL, contents.navProperty, link);
-            case ANNOTATION_TYPE_MEMBER_REQUIRED,
-                 ANNOTATION_TYPE_MEMBER_OPTIONAL ->
-                    links.createLink(HtmlIds.ANNOTATION_TYPE_ELEMENT_DETAIL,
+        Content content;
+        switch (kind) {
+            case CONSTRUCTORS:
+                content = links.createLink(HtmlIds.CONSTRUCTOR_DETAIL, contents.navConstructor, link);
+                break;
+            case ENUM_CONSTANTS:
+                content = links.createLink(HtmlIds.ENUM_CONSTANT_DETAIL, contents.navEnum, link);
+                break;
+            case FIELDS:
+                content = links.createLink(HtmlIds.FIELD_DETAIL, contents.navField, link);
+                break;
+            case METHODS:
+                content = links.createLink(HtmlIds.METHOD_DETAIL, contents.navMethod, link);
+                break;
+            case PROPERTIES:
+                content = links.createLink(HtmlIds.PROPERTY_DETAIL, contents.navProperty, link);
+                break;
+            case ANNOTATION_TYPE_MEMBER_REQUIRED:
+            case ANNOTATION_TYPE_MEMBER_OPTIONAL:
+                content = links.createLink(HtmlIds.ANNOTATION_TYPE_ELEMENT_DETAIL,
                             contents.navAnnotationTypeMember, link);
-            default -> Text.EMPTY;
-        });
+                break;
+            default:
+                content = Text.EMPTY;
+                break;
+        }
+        addContentToList(listContents, content);
     }
 
     private void addContentToList(List<Content> listContents, Content tree) {

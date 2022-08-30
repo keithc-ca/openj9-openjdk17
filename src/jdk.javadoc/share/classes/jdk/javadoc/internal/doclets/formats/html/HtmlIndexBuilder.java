@@ -177,27 +177,32 @@ public class HtmlIndexBuilder extends IndexBuilder {
             DocPath file;
             String varName;
             switch (category) {
-                case MODULES -> {
+                case MODULES: {
                     file = DocPaths.MODULE_SEARCH_INDEX_JS;
                     varName = "moduleSearchIndex";
+                    break;
                 }
-                case PACKAGES -> {
+                case PACKAGES: {
                     file = DocPaths.PACKAGE_SEARCH_INDEX_JS;
                     varName = "packageSearchIndex";
+                    break;
                 }
-                case TYPES -> {
+                case TYPES: {
                     file = DocPaths.TYPE_SEARCH_INDEX_JS;
                     varName = "typeSearchIndex";
+                    break;
                 }
-                case MEMBERS -> {
+                case MEMBERS: {
                     file = DocPaths.MEMBER_SEARCH_INDEX_JS;
                     varName = "memberSearchIndex";
+                    break;
                 }
-                case TAGS -> {
+                case TAGS: {
                     file = DocPaths.TAG_SEARCH_INDEX_JS;
                     varName = "tagSearchIndex";
+                    break;
                 }
-                default -> throw new Error();
+                default: throw new Error();
             }
 
             createSearchIndexFile(file, getItems(category), varName);

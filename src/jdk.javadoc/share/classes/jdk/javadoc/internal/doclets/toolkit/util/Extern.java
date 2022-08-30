@@ -396,10 +396,11 @@ public class Extern {
      */
     private Item findElementItem(Element element) {
         Item item = null;
-        if (element instanceof ModuleElement me) {
-            item = moduleItems.get(utils.getModuleName(me));
+        if (element instanceof ModuleElement) {
+            item = moduleItems.get(utils.getModuleName((ModuleElement)element));
         }
-        else if (element instanceof PackageElement pkg) {
+        else if (element instanceof PackageElement) {
+            PackageElement pkg = (PackageElement)element;
             ModuleElement moduleElement = utils.containingModule(pkg);
             Map<String, Item> pkgMap = packageItems.get(utils.getModuleName(moduleElement));
             item = (pkgMap != null) ? pkgMap.get(utils.getPackageName(pkg)) : null;
@@ -623,7 +624,8 @@ public class Extern {
             in = conn.getInputStream();
             redir = false;
 
-            if (conn instanceof HttpURLConnection http) {
+            if (conn instanceof HttpURLConnection) {
+                HttpURLConnection http = (HttpURLConnection)conn;
                 int stat = http.getResponseCode();
                 // See:
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status

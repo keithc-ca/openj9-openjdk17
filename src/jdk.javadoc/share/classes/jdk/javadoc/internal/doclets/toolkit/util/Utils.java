@@ -979,7 +979,8 @@ public class Utils {
      * @return {@code true} if type arguments were found
      */
     public boolean isGenericType(TypeMirror type) {
-        while (type instanceof DeclaredType dt) {
+        while (type instanceof DeclaredType) {
+        	DeclaredType dt = (DeclaredType)type;
             if (!dt.getTypeArguments().isEmpty()) {
                 return true;
             }
@@ -1265,20 +1266,26 @@ public class Utils {
      * @return the name
      */
     public String getTypeElementKindName(TypeElement te, boolean lowerCaseOnly) {
-        String kindName = switch (te.getKind()) {
-            case ANNOTATION_TYPE ->
-                    "doclet.AnnotationType";
-            case ENUM ->
-                    "doclet.Enum";
-            case INTERFACE ->
-                    "doclet.Interface";
-            case RECORD ->
-                    "doclet.RecordClass";
-            case CLASS ->
-                    isException(te) ? "doclet.Exception"
+        String kindName;
+        switch (te.getKind()) {
+            case ANNOTATION_TYPE:
+                kindName = "doclet.AnnotationType";
+                break;
+            case ENUM:
+                kindName = "doclet.Enum";
+                break;
+            case INTERFACE:
+                kindName = "doclet.Interface";
+                break;
+            case RECORD:
+                kindName = "doclet.RecordClass";
+                break;
+            case CLASS:
+                kindName = isException(te) ? "doclet.Exception"
                     : isError(te) ? "doclet.Error"
                     : "doclet.Class";
-            default ->
+                break;
+            default:
                     throw new IllegalArgumentException(te.getKind().toString());
         };
         kindName = lowerCaseOnly ? toLowerCase(kindName) : kindName;
@@ -1670,11 +1677,11 @@ public class Utils {
 
         private Collator createCollator(Locale locale) {
             Collator baseCollator = Collator.getInstance(locale);
-            if (baseCollator instanceof RuleBasedCollator rbc) {
+            if (baseCollator instanceof RuleBasedCollator) {
                 // Extend collator to sort signatures with additional args and var-args in a well-defined order:
                 // () < (int) < (int, int) < (int...)
                 try {
-                    return new RuleBasedCollator(rbc.getRules()
+                    return new RuleBasedCollator(((RuleBasedCollator)baseCollator).getRules()
                             + "& ')' < ',' < '.','['");
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
@@ -1775,11 +1782,11 @@ public class Utils {
      * @return the fields and methods
      */
     public List<Element> getAnnotationMembers(TypeElement te) {
-        return getItems(te, false, e_ ->
+        return getItems(te, false, e_ -> {
                         switch (e_.getKind()) {
-                            case FIELD, METHOD -> shouldDocument(e_);
-                            default -> false;
-                        },
+                            case FIELD: case METHOD: return shouldDocument(e_);
+                            default: return false;
+                        } },
                 Element.class);
 
     }
@@ -2001,21 +2008,21 @@ public class Utils {
     public List<TypeElement> getOrdinaryClasses(Element e) {
         return getClasses(e).stream()
                 .filter(te -> (!isException(te) && !isError(te)))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<TypeElement> getErrors(Element e) {
         return getClasses(e)
                 .stream()
                 .filter(this::isError)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<TypeElement> getExceptions(Element e) {
         return getClasses(e)
                 .stream()
                 .filter(this::isException)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -2104,7 +2111,7 @@ public class Utils {
         return e.getEnclosedElements().stream()
                 .filter(e_ -> select.test(e_) && (all || shouldDocument(e_)))
                 .map(clazz::cast)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private SimpleElementVisitor14<Boolean, Void> shouldDocumentVisitor = null;
@@ -2266,8 +2273,8 @@ public class Utils {
         protected String defaultAction(TypeMirror e, Object val) {
             if (val == null)
                 return null;
-            else if (val instanceof String s)
-                return sourceForm(s);
+            else if (val instanceof String)
+                return sourceForm((String)val);
             return val.toString(); // covers int, short
         }
 
@@ -2294,20 +2301,21 @@ public class Utils {
 
         private void sourceChar(char c, StringBuilder buf) {
             switch (c) {
-                case '\b' -> buf.append("\\b");
-                case '\t' -> buf.append("\\t");
-                case '\n' -> buf.append("\\n");
-                case '\f' -> buf.append("\\f");
-                case '\r' -> buf.append("\\r");
-                case '\"' -> buf.append("\\\"");
-                case '\'' -> buf.append("\\\'");
-                case '\\' -> buf.append("\\\\");
-                default -> {
+                case '\b': buf.append("\\b"); break;
+                case '\t': buf.append("\\t"); break;
+                case '\n': buf.append("\\n"); break;
+                case '\f': buf.append("\\f"); break;
+                case '\r': buf.append("\\r"); break;
+                case '\"': buf.append("\\\""); break;
+                case '\'': buf.append("\\\'"); break;
+                case '\\': buf.append("\\\\"); break;
+                default: {
                     if (isPrintableAscii(c)) {
                         buf.append(c);
                         return;
                     }
                     unicodeEscape(c, buf);
+                    break;
                 }
             }
         }
@@ -2540,7 +2548,7 @@ public class Utils {
         return getBlockTags(element).stream()
                 .filter(t -> t.getKind() != ERRONEOUS)
                 .filter(filter)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public <T extends DocTree> List<? extends T> getBlockTags(Element element, Predicate<DocTree> filter, Class<T> tClass) {
@@ -2548,7 +2556,7 @@ public class Utils {
                 .filter(t -> t.getKind() != ERRONEOUS)
                 .filter(filter)
                 .map(tClass::cast)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<? extends DocTree> getBlockTags(Element element, DocTree.Kind kind) {
@@ -2565,10 +2573,10 @@ public class Utils {
 
     public List<? extends DocTree> getBlockTags(Element element, Taglet taglet) {
         return getBlockTags(element, t -> {
-            if (taglet instanceof BaseTaglet baseTaglet) {
-                return baseTaglet.accepts(t);
-            } else if (t instanceof BlockTagTree blockTagTree) {
-                return blockTagTree.getTagName().equals(taglet.getName());
+            if (taglet instanceof BaseTaglet) {
+                return ((BaseTaglet)taglet).accepts(t);
+            } else if (t instanceof BlockTagTree) {
+                return ((BlockTagTree)t).getTagName().equals(taglet.getName());
             } else {
                 return false;
             }
@@ -2796,7 +2804,7 @@ public class Utils {
 
     public List<? extends ThrowsTree> getThrowsTrees(Element element) {
         return getBlockTags(element,
-                t -> switch (t.getKind()) { case EXCEPTION, THROWS -> true; default -> false; },
+                t -> { switch (t.getKind()) { case EXCEPTION: case THROWS: return true; default: return false; } },
                 ThrowsTree.class);
     }
 
@@ -2939,7 +2947,7 @@ public class Utils {
         List<TypeElement> usedInDeclaration = new ArrayList<>();
         usedInDeclaration.addAll(annotations2Classes(el));
         switch (el.getKind()) {
-            case ANNOTATION_TYPE, CLASS, ENUM, INTERFACE, RECORD -> {
+            case ANNOTATION_TYPE: case CLASS: case ENUM: case INTERFACE: case RECORD: {
                 TypeElement te = (TypeElement) el;
                 for (TypeParameterElement tpe : te.getTypeParameters()) {
                     usedInDeclaration.addAll(types2Classes(tpe.getBounds()));
@@ -2947,9 +2955,10 @@ public class Utils {
                 usedInDeclaration.addAll(types2Classes(List.of(te.getSuperclass())));
                 usedInDeclaration.addAll(types2Classes(te.getInterfaces()));
                 usedInDeclaration.addAll(types2Classes(te.getPermittedSubclasses()));
-                usedInDeclaration.addAll(types2Classes(te.getRecordComponents().stream().map(Element::asType).toList())); //TODO: annotations on record components???
+                usedInDeclaration.addAll(types2Classes(te.getRecordComponents().stream().map(Element::asType).collect(Collectors.toList()))); //TODO: annotations on record components???
+                break;
             }
-            case CONSTRUCTOR, METHOD -> {
+            case CONSTRUCTOR: case METHOD: {
                 ExecutableElement ee = (ExecutableElement) el;
                 for (TypeParameterElement tpe : ee.getTypeParameters()) {
                     usedInDeclaration.addAll(types2Classes(tpe.getBounds()));
@@ -2957,16 +2966,19 @@ public class Utils {
                 usedInDeclaration.addAll(types2Classes(List.of(ee.getReturnType())));
                 usedInDeclaration.addAll(types2Classes(List.of(ee.getReceiverType())));
                 usedInDeclaration.addAll(types2Classes(ee.getThrownTypes()));
-                usedInDeclaration.addAll(types2Classes(ee.getParameters().stream().map(VariableElement::asType).toList()));
+                usedInDeclaration.addAll(types2Classes(ee.getParameters().stream().map(VariableElement::asType).collect(Collectors.toList())));
                 usedInDeclaration.addAll(annotationValue2Classes(ee.getDefaultValue()));
+                break;
             }
-            case FIELD, ENUM_CONSTANT, RECORD_COMPONENT -> {
+            case FIELD: case ENUM_CONSTANT: case RECORD_COMPONENT: {
                 VariableElement ve = (VariableElement) el;
                 usedInDeclaration.addAll(types2Classes(List.of(ve.asType())));
+                break;
             }
-            case MODULE, PACKAGE -> {
+            case MODULE: case PACKAGE: {
+                break;
             }
-            default -> throw new IllegalArgumentException("Unexpected: " + el.getKind());
+            default: throw new IllegalArgumentException("Unexpected: " + el.getKind());
         }
 
         Set<TypeElement> previewAPI = new HashSet<>();

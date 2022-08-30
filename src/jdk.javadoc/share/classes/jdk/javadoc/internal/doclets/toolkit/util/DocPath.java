@@ -63,7 +63,7 @@ public class DocPath {
 
     @Override
     public boolean equals(Object other) {
-        return (other instanceof DocPath dp) && path.equals(dp.path);
+        return (other instanceof DocPath) && path.equals(((DocPath)other).path);
     }
 
     @Override

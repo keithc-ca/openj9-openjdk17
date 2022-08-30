@@ -409,22 +409,23 @@ public class HtmlIds {
      * @return the id
      */
     static HtmlId forSummaryKind(SummaryAPIListBuilder.SummaryElementKind kind) {
-        return HtmlId.of(switch (kind) {
-            case MODULE -> "module";
-            case PACKAGE -> "package";
-            case INTERFACE -> "interface";
-            case CLASS -> "class";
-            case ENUM -> "enum-class";
-            case EXCEPTION -> "exception";
-            case ERROR -> "error";
-            case ANNOTATION_TYPE -> "annotation-interface";
-            case FIELD -> "field";
-            case METHOD -> "method";
-            case CONSTRUCTOR -> "constructor";
-            case ENUM_CONSTANT -> "enum-constant";
-            case ANNOTATION_TYPE_MEMBER -> "annotation-interface-member";
-            case RECORD_CLASS -> "record-class";
-        });
+        switch (kind) {
+            case MODULE: return HtmlId.of("module");
+            case PACKAGE: return HtmlId.of("package");
+            case INTERFACE: return HtmlId.of("interface");
+            case CLASS: return HtmlId.of("class");
+            case ENUM: return HtmlId.of("enum-class");
+            case EXCEPTION: return HtmlId.of("exception");
+            case ERROR: return HtmlId.of("error");
+            case ANNOTATION_TYPE: return HtmlId.of("annotation-interface");
+            case FIELD: return HtmlId.of("field");
+            case METHOD: return HtmlId.of("method");
+            case CONSTRUCTOR: return HtmlId.of("constructor");
+            case ENUM_CONSTANT: return HtmlId.of("enum-constant");
+            case ANNOTATION_TYPE_MEMBER: return HtmlId.of("annotation-interface-member");
+            case RECORD_CLASS: return HtmlId.of("record-class");
+            default: throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -435,16 +436,17 @@ public class HtmlIds {
      * @return the id
      */
     static HtmlId forMemberSummary(VisibleMemberTable.Kind kind) {
-        return switch (kind) {
-            case NESTED_CLASSES -> NESTED_CLASS_SUMMARY;
-            case ENUM_CONSTANTS -> ENUM_CONSTANT_SUMMARY;
-            case FIELDS -> FIELD_SUMMARY;
-            case CONSTRUCTORS -> CONSTRUCTOR_SUMMARY;
-            case METHODS -> METHOD_SUMMARY;
-            case ANNOTATION_TYPE_MEMBER_OPTIONAL -> ANNOTATION_TYPE_OPTIONAL_ELEMENT_SUMMARY;
-            case ANNOTATION_TYPE_MEMBER_REQUIRED -> ANNOTATION_TYPE_REQUIRED_ELEMENT_SUMMARY;
-            case PROPERTIES -> PROPERTY_SUMMARY;
-        };
+        switch (kind) {
+            case NESTED_CLASSES: return NESTED_CLASS_SUMMARY;
+            case ENUM_CONSTANTS: return ENUM_CONSTANT_SUMMARY;
+            case FIELDS: return FIELD_SUMMARY;
+            case CONSTRUCTORS: return CONSTRUCTOR_SUMMARY;
+            case METHODS: return METHOD_SUMMARY;
+            case ANNOTATION_TYPE_MEMBER_OPTIONAL: return ANNOTATION_TYPE_OPTIONAL_ELEMENT_SUMMARY;
+            case ANNOTATION_TYPE_MEMBER_REQUIRED: return ANNOTATION_TYPE_REQUIRED_ELEMENT_SUMMARY;
+            case PROPERTIES: return PROPERTY_SUMMARY;
+            default: throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -479,11 +481,11 @@ public class HtmlIds {
      * @return the id
      */
     public HtmlId forPreviewSection(Element el) {
-        return HtmlId.of("preview-" + switch (el.getKind()) {
-            case CONSTRUCTOR, METHOD -> forMember((ExecutableElement) el).name();
-            case PACKAGE -> forPackage((PackageElement) el).name();
-            default -> utils.getFullyQualifiedName(el, false);
-        });
+        switch (el.getKind()) {
+            case CONSTRUCTOR: case METHOD: return HtmlId.of("preview-" + forMember((ExecutableElement) el).name());
+            case PACKAGE: return HtmlId.of("preview-" + forPackage((PackageElement) el).name());
+            default: return HtmlId.of("preview-" + utils.getFullyQualifiedName(el, false));
+        }
     }
 
     /**

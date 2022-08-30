@@ -74,8 +74,8 @@ public class ThrowsTaglet extends BaseTaglet
         Element exception;
         CommentHelper ch = utils.getCommentHelper(input.element);
         if (input.tagId == null) {
-            exception = input.docTreeInfo.docTree instanceof ThrowsTree tt
-                    ? ch.getException(tt) : null;
+            exception = input.docTreeInfo.docTree instanceof ThrowsTree
+                    ? ch.getException((ThrowsTree)input.docTreeInfo.docTree) : null;
             input.tagId = exception == null
                     ? ch.getExceptionName(input.docTreeInfo.docTree).getSignature()
                     : utils.getFullyQualifiedName(exception);
@@ -148,7 +148,7 @@ public class ThrowsTaglet extends BaseTaglet
                     }
                     List<? extends ThrowsTree> inheritedTags = inheritedDoc.tagList.stream()
                             .map(t -> (ThrowsTree) t)
-                            .toList();
+                            .collect(Collectors.toList());
                     declaredExceptionTags.put(inheritedTags, (ExecutableElement) inheritedDoc.holder);
                 }
             }

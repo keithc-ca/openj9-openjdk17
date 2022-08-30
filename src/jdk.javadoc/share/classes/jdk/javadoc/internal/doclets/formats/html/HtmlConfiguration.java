@@ -363,8 +363,8 @@ public class HtmlConfiguration extends BaseConfiguration {
     @Override
     public JavaFileObject getOverviewPath() {
         String overviewpath = options.overviewPath();
-        if (overviewpath != null && getFileManager() instanceof StandardJavaFileManager fm) {
-            return fm.getJavaFileObjects(overviewpath).iterator().next();
+        if (overviewpath != null && getFileManager() instanceof StandardJavaFileManager) {
+            return ((StandardJavaFileManager)getFileManager()).getJavaFileObjects(overviewpath).iterator().next();
         }
         return null;
     }

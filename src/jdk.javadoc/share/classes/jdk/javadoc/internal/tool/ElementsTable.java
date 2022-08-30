@@ -1159,8 +1159,8 @@ public class ElementsTable {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof ModulePackage that) {
-                return this.toString().equals(that.toString());
+            if (obj instanceof ModulePackage) {
+                return this.toString().equals(((ModulePackage)obj).toString());
             }
             return false;
         }

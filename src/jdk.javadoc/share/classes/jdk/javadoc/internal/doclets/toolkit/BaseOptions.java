@@ -40,6 +40,7 @@ import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import jdk.javadoc.doclet.Doclet;
 import jdk.javadoc.doclet.Reporter;
@@ -492,7 +493,7 @@ public abstract class BaseOptions {
                 new Option(resources, "--since", 1) {
                     @Override
                     public boolean process(String opt, List<String> args) {
-                        since = Arrays.stream(args.get(0).split(",")).map(String::trim).toList();
+                        since = Arrays.stream(args.get(0).split(",")).map(String::trim).collect(Collectors.toList());
                         return true;
                     }
                 },

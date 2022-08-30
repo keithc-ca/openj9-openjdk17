@@ -226,7 +226,8 @@ public class TagletManager {
      * @throws IOException if an error occurs while setting the location
      */
     public void initTagletPath(JavaFileManager fileManager) throws IOException {
-        if (fileManager instanceof StandardJavaFileManager sfm) {
+        if (fileManager instanceof StandardJavaFileManager) {
+            StandardJavaFileManager sfm = (StandardJavaFileManager)fileManager;
             if (tagletPath != null) {
                 List<File> paths = new ArrayList<>();
                 for (String pathname : tagletPath.split(File.pathSeparator)) {
@@ -563,7 +564,8 @@ public class TagletManager {
             case PACKAGE:
                 return blockTagletsByLocation.get(Location.PACKAGE);
             case OTHER:
-                if (e instanceof DocletElement de) {
+                if (e instanceof DocletElement) {
+                    DocletElement de = (DocletElement)e;
                     switch (de.getSubKind()) {
                         case DOCFILE:
                             return blockTagletsByLocation.get(Location.PACKAGE);
@@ -762,7 +764,7 @@ public class TagletManager {
                     + format(t.inMethod(), "method") + " "
                     + format(t.inField(), "field") + " "
                     + format(t.isInlineTag(), "inline")+ " "
-                    + format((t instanceof SimpleTaglet st) && !st.enabled, "disabled"));
+                    + format((t instanceof SimpleTaglet) && !((SimpleTaglet)t).enabled, "disabled"));
         });
     }
 

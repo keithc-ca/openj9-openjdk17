@@ -56,41 +56,43 @@ import jdk.javadoc.internal.doclets.toolkit.util.SummaryAPIListBuilder.SummaryEl
 public class SummaryListWriter<L extends SummaryAPIListBuilder> extends SubWriterHolderWriter {
 
     private String getHeadingKey(SummaryElementKind kind) {
-        return switch (kind) {
-            case MODULE -> "doclet.Modules";
-            case PACKAGE -> "doclet.Packages";
-            case INTERFACE -> "doclet.Interfaces";
-            case CLASS -> "doclet.Classes";
-            case ENUM -> "doclet.Enums";
-            case EXCEPTION -> "doclet.Exceptions";
-            case ERROR -> "doclet.Errors";
-            case ANNOTATION_TYPE -> "doclet.Annotation_Types";
-            case FIELD -> "doclet.Fields";
-            case METHOD -> "doclet.Methods";
-            case CONSTRUCTOR -> "doclet.Constructors";
-            case ENUM_CONSTANT -> "doclet.Enum_Constants";
-            case ANNOTATION_TYPE_MEMBER -> "doclet.Annotation_Type_Members";
-            case RECORD_CLASS -> "doclet.RecordClasses";
-        };
+        switch (kind) {
+            case MODULE: return "doclet.Modules";
+            case PACKAGE: return "doclet.Packages";
+            case INTERFACE: return "doclet.Interfaces";
+            case CLASS: return "doclet.Classes";
+            case ENUM: return "doclet.Enums";
+            case EXCEPTION: return "doclet.Exceptions";
+            case ERROR: return "doclet.Errors";
+            case ANNOTATION_TYPE: return "doclet.Annotation_Types";
+            case FIELD: return "doclet.Fields";
+            case METHOD: return "doclet.Methods";
+            case CONSTRUCTOR: return "doclet.Constructors";
+            case ENUM_CONSTANT: return "doclet.Enum_Constants";
+            case ANNOTATION_TYPE_MEMBER: return "doclet.Annotation_Type_Members";
+            case RECORD_CLASS: return "doclet.RecordClasses";
+            default: throw new IllegalArgumentException();
+        }
     }
 
     private String getHeaderKey(SummaryElementKind kind) {
-        return switch (kind) {
-            case MODULE -> "doclet.Module";
-            case PACKAGE -> "doclet.Package";
-            case INTERFACE -> "doclet.Interface";
-            case CLASS -> "doclet.Class";
-            case ENUM -> "doclet.Enum";
-            case EXCEPTION -> "doclet.Exceptions";
-            case ERROR -> "doclet.Errors";
-            case ANNOTATION_TYPE -> "doclet.AnnotationType";
-            case FIELD -> "doclet.Field";
-            case METHOD -> "doclet.Method";
-            case CONSTRUCTOR -> "doclet.Constructor";
-            case ENUM_CONSTANT -> "doclet.Enum_Constant";
-            case ANNOTATION_TYPE_MEMBER -> "doclet.Annotation_Type_Member";
-            case RECORD_CLASS -> "doclet.RecordClass";
-        };
+        switch (kind) {
+            case MODULE: return "doclet.Module";
+            case PACKAGE: return "doclet.Package";
+            case INTERFACE: return "doclet.Interface";
+            case CLASS: return "doclet.Class";
+            case ENUM: return "doclet.Enum";
+            case EXCEPTION: return "doclet.Exceptions";
+            case ERROR: return "doclet.Errors";
+            case ANNOTATION_TYPE: return "doclet.AnnotationType";
+            case FIELD: return "doclet.Field";
+            case METHOD: return "doclet.Method";
+            case CONSTRUCTOR: return "doclet.Constructor";
+            case ENUM_CONSTANT: return "doclet.Enum_Constant";
+            case ANNOTATION_TYPE_MEMBER: return "doclet.Annotation_Type_Member";
+            case RECORD_CLASS: return "doclet.RecordClass";
+            default: throw new IllegalArgumentException();
+        }
     }
 
     private final PageMode pageMode;
@@ -247,16 +249,20 @@ public class SummaryListWriter<L extends SummaryAPIListBuilder> extends SubWrite
     }
 
     protected Content getSummaryLink(Element e) {
-        AbstractMemberWriter writer = switch (e.getKind()) {
-            case INTERFACE, CLASS, ENUM,
-                 ANNOTATION_TYPE, RECORD -> new NestedClassWriterImpl(this);
-            case FIELD -> new FieldWriterImpl(this);
-            case METHOD -> new MethodWriterImpl(this);
-            case CONSTRUCTOR -> new ConstructorWriterImpl(this);
-            case ENUM_CONSTANT -> new EnumConstantWriterImpl(this);
-            case RECORD_COMPONENT ->
+        AbstractMemberWriter writer;
+        switch (e.getKind()) {
+            case INTERFACE:
+            case CLASS:
+            case ENUM:
+            case ANNOTATION_TYPE:
+            case RECORD: writer = new NestedClassWriterImpl(this); break;
+            case FIELD: writer = new FieldWriterImpl(this); break;
+            case METHOD: writer = new MethodWriterImpl(this); break;
+            case CONSTRUCTOR: writer = new ConstructorWriterImpl(this); break;
+            case ENUM_CONSTANT: writer = new EnumConstantWriterImpl(this); break;
+            case RECORD_COMPONENT:
                 throw new AssertionError("Record components are not supported by SummaryListWriter!");
-            default -> new AnnotationTypeOptionalMemberWriterImpl(this, null);
+            default: writer = new AnnotationTypeOptionalMemberWriterImpl(this, null);
         };
         return writer.getSummaryLink(e);
     }

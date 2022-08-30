@@ -323,19 +323,25 @@ public class IndexWriter extends HtmlDocletWriter {
      */
     protected void addMemberDesc(Element member, TypeElement enclosing, Content contentTree) {
         String kindName = utils.getTypeElementKindName(enclosing, true);
-        String resource = switch (member.getKind()) {
-            case ENUM_CONSTANT ->
-                    "doclet.Enum_constant_in";
-            case FIELD ->
-                    utils.isStatic(member) ? "doclet.Static_variable_in" : "doclet.Variable_in";
-            case CONSTRUCTOR ->
-                    "doclet.Constructor_for";
-            case METHOD ->
-                    utils.isAnnotationType(enclosing) ? "doclet.Element_in"
+        String resource;
+        switch (member.getKind()) {
+            case ENUM_CONSTANT:
+                resource = "doclet.Enum_constant_in";
+                break;
+            case FIELD:
+                resource = utils.isStatic(member) ? "doclet.Static_variable_in" : "doclet.Variable_in";
+                break;
+            case CONSTRUCTOR:
+                resource = "doclet.Constructor_for";
+                break;
+            case METHOD:
+                resource = utils.isAnnotationType(enclosing) ? "doclet.Element_in"
                             : utils.isStatic(member) ? "doclet.Static_method_in" : "doclet.Method_in";
-            case RECORD_COMPONENT ->
-                    "doclet.Record_component_in";
-            default -> throw new IllegalArgumentException(member.getKind().toString());
+                break;
+            case RECORD_COMPONENT:
+                resource = "doclet.Record_component_in";
+                break;
+            default: throw new IllegalArgumentException(member.getKind().toString());
         };
         contentTree.add(contents.getContent(resource, kindName)).add(" ");
         addPreQualifiedClassLink(HtmlLinkInfo.Kind.INDEX, enclosing,
@@ -367,7 +373,7 @@ public class IndexWriter extends HtmlDocletWriter {
                 .sorted((i1,i2)-> utils.compareStrings(i1.getLabel(), i2.getLabel()))
                 .map(i -> links.createLink(pathToRoot.resolve(i.getUrl()),
                         contents.getNonBreakString(i.getLabel())))
-                .toList();
+                .collect(Collectors.toList());
         contentTree.add(contents.join(getVerticalSeparator(), pageLinks));
     }
 

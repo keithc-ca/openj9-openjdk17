@@ -117,11 +117,12 @@ public class SummaryAPIListBuilder {
             SortedSet<Element> eset;
             if (belongsToSummary.test(e)) {
                 switch (e.getKind()) {
-                    case ANNOTATION_TYPE -> {
+                    case ANNOTATION_TYPE: {
                         eset = summaryMap.get(SummaryElementKind.ANNOTATION_TYPE);
                         eset.add(e);
+                        break;
                     }
-                    case CLASS -> {
+                    case CLASS: {
                         if (utils.isError(te)) {
                             eset = summaryMap.get(SummaryElementKind.ERROR);
                         } else if (utils.isException(te)) {
@@ -130,18 +131,22 @@ public class SummaryAPIListBuilder {
                             eset = summaryMap.get(SummaryElementKind.CLASS);
                         }
                         eset.add(e);
+                        break;
                     }
-                    case INTERFACE -> {
+                    case INTERFACE: {
                         eset = summaryMap.get(SummaryElementKind.INTERFACE);
                         eset.add(e);
+                        break;
                     }
-                    case ENUM -> {
+                    case ENUM: {
                         eset = summaryMap.get(SummaryElementKind.ENUM);
                         eset.add(e);
+                        break;
                     }
-                    case RECORD -> {
+                    case RECORD: {
                         eset = summaryMap.get(SummaryElementKind.RECORD_CLASS);
                         eset.add(e);
+                        break;
                     }
                 }
                 handleElement(te);

@@ -141,9 +141,9 @@ public class JavadocLog extends Log implements Reporter {
     /** Get the current javadoc log, which is also the compiler log. */
     public static JavadocLog instance0(Context context) {
         Log instance = context.get(logKey);
-        if (!(instance instanceof JavadocLog l))
+        if (!(instance instanceof JavadocLog))
             throw new InternalError("no JavadocLog instance!");
-        return l;
+        return (JavadocLog)instance;
     }
 
     public static void preRegister(Context context,
@@ -263,7 +263,7 @@ public class JavadocLog extends Log implements Reporter {
         // Although not required to do so, it is the case that any file object returned from the
         // javac impl of JavaFileManager will return an object that implements JavaFileObject.
         // See PathFileObject, which provides the primary impls of (Java)FileObject.
-        JavaFileObject fo = file instanceof JavaFileObject _fo ? _fo : new WrappingJavaFileObject(file);
+        JavaFileObject fo = file instanceof JavaFileObject ? (JavaFileObject)file : new WrappingJavaFileObject(file);
         DiagnosticSource ds = new DiagnosticSource(fo, this);
         DiagnosticPosition dp = createDiagnosticPosition(null, start, pos, end);
         report(dt, flags, ds, dp, message);
@@ -587,12 +587,13 @@ public class JavadocLog extends Log implements Reporter {
      * @return the diagnostic type
      */
     private DiagnosticType getDiagnosticType(Diagnostic.Kind kind) {
-        return switch (kind) {
-            case ERROR -> DiagnosticType.ERROR;
-            case WARNING, MANDATORY_WARNING -> DiagnosticType.WARNING;
-            case NOTE -> DiagnosticType.NOTE;
-            case OTHER -> DiagnosticType.FRAGMENT;
-        };
+        switch (kind) {
+            case ERROR: return DiagnosticType.ERROR;
+            case WARNING: case MANDATORY_WARNING: return DiagnosticType.WARNING;
+            case NOTE: return DiagnosticType.NOTE;
+            case OTHER: return DiagnosticType.FRAGMENT;
+            default: throw new IllegalArgumentException();
+        }
     }
 
     /**

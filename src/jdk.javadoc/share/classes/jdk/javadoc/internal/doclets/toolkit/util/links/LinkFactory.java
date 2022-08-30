@@ -167,7 +167,8 @@ public abstract class LinkFactory {
                 @Override
                 public Content visitDeclared(DeclaredType type, LinkInfo linkInfo) {
                     TypeMirror enc = type.getEnclosingType();
-                    if (enc instanceof DeclaredType dt && utils.isGenericType(dt)) {
+                    if (enc instanceof DeclaredType && utils.isGenericType((DeclaredType)enc)) {
+                        DeclaredType dt = (DeclaredType)enc;
                         // If an enclosing type has type parameters render them as separate links as
                         // otherwise this information is lost. On the other hand, plain enclosing types
                         // are not linked separately as they are easy to reach from the nested type.

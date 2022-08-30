@@ -368,7 +368,7 @@ public class CommentUtils {
         }
 
         for (DocTree t : elemComment.getBlockTags()) {
-            if (t instanceof ParamTree pt && pt.getName().getName() == component) {
+            if (t instanceof ParamTree && ((ParamTree)t).getName().getName() == component) {
                 return true;
             }
         }
@@ -419,7 +419,8 @@ public class CommentUtils {
         PackageElement pe = null;
         switch (e.getKind()) {
             case OTHER:
-                if (e instanceof DocletElement de) {
+                if (e instanceof DocletElement) {
+                    DocletElement de = (DocletElement)e;
                     fo = de.getFileObject();
                     pe = de.getPackageElement();
                 }

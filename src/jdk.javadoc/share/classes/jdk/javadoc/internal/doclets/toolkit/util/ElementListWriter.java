@@ -75,7 +75,7 @@ public class ElementListWriter {
 
     protected void generateElementListFile(DocletEnvironment docEnv) throws DocFileIOException {
         try (Writer fileWriter = file.openWriter();
-             BufferedWriter out = (fileWriter instanceof BufferedWriter b) ? b
+             BufferedWriter out = (fileWriter instanceof BufferedWriter) ? (BufferedWriter)fileWriter
                      : new BufferedWriter(fileWriter)) {
             if (configuration.showModules) {
                 for (ModuleElement mdle : configuration.modulePackages.keySet()) {
