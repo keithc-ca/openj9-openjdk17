@@ -23,6 +23,10 @@
 # questions.
 #
 
+# ===========================================================================
+# (c) Copyright IBM Corp. 2022, 2022 All Rights Reserved
+# ===========================================================================
+
 ################################################################################
 # This file contains helper functions for Init.gmk.
 # It is divided in two parts, depending on if a SPEC is present or not
@@ -310,7 +314,7 @@ else # $(HAS_SPEC)=true
   # level of reproducible builds
   define SetupReproducibleBuild
     ifeq ($$(SOURCE_DATE), updated)
-      SOURCE_DATE := $$(shell $$(DATE) +"%s")
+      SOURCE_DATE := $$(shell $$(JAVA) $$(TOPDIR)/closed/make/src/EpochTime.java)
     endif
     export SOURCE_DATE_EPOCH := $$(SOURCE_DATE)
     ifeq ($$(IS_GNU_DATE), yes)
