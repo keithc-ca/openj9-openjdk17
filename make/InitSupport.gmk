@@ -314,18 +314,10 @@ else # $(HAS_SPEC)=true
   # level of reproducible builds
   define SetupReproducibleBuild
     ifeq ($$(SOURCE_DATE), updated)
-      SOURCE_DATE := $$(shell $$(JAVA) $$(TOPDIR)/closed/make/src/EpochTime.java)
+      SOURCE_DATE := $$(shell $$(JAVA) $$(TOPDIR)/closed/make/src/DateUtil.java epoch)
     endif
     export SOURCE_DATE_EPOCH := $$(SOURCE_DATE)
-    ifeq ($$(IS_GNU_DATE), yes)
-      export SOURCE_DATE_ISO_8601 := $$(shell $$(DATE) --utc \
-                                                       --date="@$$(SOURCE_DATE_EPOCH)" \
-                                                       +"%Y-%m-%dT%H:%M:%SZ" 2> /dev/null)
-    else
-      export SOURCE_DATE_ISO_8601 := $$(shell $$(DATE) -u \
-                                                       -j -f "%s" "$$(SOURCE_DATE_EPOCH)" \
-                                                       +"%Y-%m-%dT%H:%M:%SZ" 2> /dev/null)
-    endif
+    export SOURCE_DATE_ISO_8601 := $$(shell $$(JAVA) $$(TOPDIR)/closed/make/src/DateUtil.java iso8601 $$(SOURCE_DATE_EPOCH))
   endef
 
   # Parse COMPARE_BUILD into COMPARE_BUILD_*

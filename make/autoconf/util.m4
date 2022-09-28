@@ -236,6 +236,7 @@ AC_DEFUN([UTIL_GET_MATCHING_VALUES],
 # $2: input date/time string
 AC_DEFUN([UTIL_GET_EPOCH_TIMESTAMP],
 [
+  timestamp=$($JAVA ...)
   if test "x$IS_GNU_DATE" = xyes; then
     # GNU date
     timestamp=$($DATE --utc --date=$2 +"%s" 2> /dev/null)

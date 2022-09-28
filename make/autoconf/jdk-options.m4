@@ -217,6 +217,7 @@ AC_DEFUN_ONCE([JDKOPT_SETUP_JDK_OPTIONS],
   elif test "x$with_copyright_year" != x; then
     COPYRIGHT_YEAR="$with_copyright_year"
   elif test "x$SOURCE_DATE_EPOCH" != x; then
+    # FIXME
     if test "x$IS_GNU_DATE" = xyes; then
       COPYRIGHT_YEAR=`date --date=@$SOURCE_DATE_EPOCH +%Y`
     else
